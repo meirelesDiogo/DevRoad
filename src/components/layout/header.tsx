@@ -1,3 +1,5 @@
+"use client";
+
 import { useState, type CSSProperties, type FC } from "react";
 
 /**
@@ -214,3 +216,4 @@ const Header: FC<HeaderProps> = ({ activePath = "/roadmaps", isAuthenticated = f
 };
 
 export default Header;
+export { Header };

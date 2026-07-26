@@ -1,5 +1,7 @@
 
 import "./globals.css";
+import  {Header}  from '../components/layout/header';
+import { Footer } from '../components/layout/footer';
 
 export default function RootLayout({
   children,
@@ -12,8 +14,9 @@ export default function RootLayout({
       <body
       className={`antialiased`}
     >
-      <h1>My App</h1>
+ <Header/>
       {children}
+      <Footer/>
       </body>
     </html>
   );

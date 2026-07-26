@@ -206,3 +206,4 @@ const Footer: FC<FooterProps> = ({ year = new Date().getFullYear() }) => {
 };
 
 export default Footer;
+export { Footer };
