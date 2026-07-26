@@ -1,4 +1,4 @@
-import type { CSSProperties, FC, ReactNode } from "react";
+import type { CSSProperties, FC, ReactNode, AnchorHTMLAttributes } from "react";
 
 /**
  * Footer do DevRoad
@@ -95,22 +95,13 @@ const LogoMark: FC<{ size?: number }> = ({ size = 34 }) => (
     <path d="M8 92 C20 74 30 68 40 60" stroke={`url(#${logoGradientId})`} strokeWidth={6} strokeLinecap="round" fill="none" />
   </svg>
 );
-import type {
-  CSSProperties,
-  FC,
-  ReactNode,
-  AnchorHTMLAttributes,
-} from "react";interface SocialIconProps
-  extends AnchorHTMLAttributes<HTMLAnchorElement> {
+
+interface SocialIconProps extends AnchorHTMLAttributes<HTMLAnchorElement> {
   label: string;
   children: ReactNode;
 }
 
-const SocialIcon: FC<SocialIconProps> = ({
-  label,
-  children,
-  ...props
-}) => (
+const SocialIcon: FC<SocialIconProps> = ({ label, children, ...props }) => (
   <a
     {...props}
     aria-label={label}
