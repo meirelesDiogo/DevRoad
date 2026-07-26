@@ -4,9 +4,13 @@ import Image from "next/image";
 import Link from "next/link";
 
 export const metadata:Metadata = {
+  title: "Home - Aprenda a programar do zero",
+  description: "Roadmaps, aulas e projetos práticos para você sair do zero e chegar lá — sem pagar nada por isso.",
+openGraph: {
   title: "DevRoad - Aprenda a programar do zero",
   description: "Roadmaps, aulas e projetos práticos para você sair do zero e chegar lá — sem pagar nada por isso.",
-
+  images: ['https://dev-road-henna.vercel.app/logo.png'],
+}
  }
 /**
  * Home — Hero + Cards de linguagem do DevRoad
