@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, type CSSProperties, type FC } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 /**
  * Header do DevRoad
@@ -75,6 +77,7 @@ const LogoMark: FC<{ size?: number }> = ({ size = 34 }) => (
 
 const Header: FC<HeaderProps> = ({ activePath = "/roadmaps", isAuthenticated = false }) => {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const pathname = usePathname();
 
   return (
     <header
@@ -96,25 +99,22 @@ const Header: FC<HeaderProps> = ({ activePath = "/roadmaps", isAuthenticated = f
         {/* Nav desktop */}
         <nav aria-label="Navegação principal" className="ml-2 hidden items-center gap-1.5 md:flex">
           {NAV_ITEMS.map((item) => {
-            const isActive = item.href === activePath;
+            const isActive = pathname === item.href;
             return (
-              <a
-                key={item.href}
-                href={item.href}
-                style={{ color: isActive ? COLORS.text : COLORS.muted }}
-                className="relative rounded-lg px-3.5 py-2 text-sm font-medium transition-colors hover:bg-[#151A24] hover:!text-[#EDF0F5]"
-              >
-                {item.label}
-                {isActive && (
-                  <span
-                    aria-hidden
-                    style={{
-                      backgroundImage: `repeating-linear-gradient(90deg, ${COLORS.blue} 0 4px, transparent 4px 7px)`,
-                    }}
-                    className="absolute bottom-0.5 left-3.5 right-3.5 h-0.5"
-                  />
-                )}
-              </a>
+            <Link
+  key={item.href}
+  href={item.href}
+  style={{
+    color: isActive ? COLORS.text : COLORS.muted,
+  }}
+  className={`rounded-lg px-3.5 py-2 text-sm font-medium transition-all ${
+    isActive
+      ? "bg-[#151A24]"
+      : "hover:bg-[#151A24] hover:text-white"
+  }`}
+>
+  {item.label}
+</Link>
             );
           })}
         </nav>
