@@ -1,3 +1,165 @@
+/* =========================================================
+   DevRoad — globals.css
+   Tema escuro padrão, com os mesmos tokens usados no
+   Header.tsx, Footer.tsx e not-found.tsx.
+
+   Local: src/app/globals.css
+   IMPORTANTE: o @import de fontes precisa ser a primeira
+   linha do arquivo (regra do CSS, não é opcional).
+========================================================= */
+
 @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap');
 @import "tailwindcss";
 
+/* ---------------------------------------------------------
+   Tokens de tema — Tailwind v4: o @theme expõe cada variável
+   como utility class também (ex: bg-devroad-surface,
+   text-devroad-muted, border-devroad-border).
+--------------------------------------------------------- */
+@theme {
+  --color-devroad-bg: #0A0D14;
+  --color-devroad-surface: #10141D;
+  --color-devroad-surface-2: #151A24;
+  --color-devroad-border: #1E2430;
+  --color-devroad-blue: #2E8BFF;
+  --color-devroad-purple: #7C5CFF;
+  --color-devroad-text: #EDF0F5;
+  --color-devroad-muted: #8A93A6;
+  --color-devroad-muted-2: #5C6478;
+
+  --font-display: "Space Grotesk", sans-serif;
+  --font-body: "Inter", sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+}
+
+/* também disponíveis como variáveis CSS normais, pra usar
+   fora do Tailwind (style inline, SVG, etc.) */
+:root {
+  --bg: #0A0D14;
+  --surface: #10141D;
+  --surface-2: #151A24;
+  --border: #1E2430;
+  --blue: #2E8BFF;
+  --purple: #7C5CFF;
+  --text: #EDF0F5;
+  --muted: #8A93A6;
+  --muted-2: #5C6478;
+  --grad: linear-gradient(90deg, var(--blue), var(--purple));
+}
+
+/* ---------------------------------------------------------
+   Base
+--------------------------------------------------------- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  color-scheme: dark;
+}
+
+body {
+  background-color: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+/* rótulos/eyebrows no estilo do site (usado em badges, tags) */
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+/* ---------------------------------------------------------
+   Seleção de texto
+--------------------------------------------------------- */
+::selection {
+  background-color: var(--purple);
+  color: #ffffff;
+}
+
+/* ---------------------------------------------------------
+   Foco visível (acessibilidade) — some só no mouse, aparece no teclado
+--------------------------------------------------------- */
+:focus {
+  outline: none;
+}
+
+:focus-visible {
+  outline: 2px solid var(--blue);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* ---------------------------------------------------------
+   Scrollbar (Chrome/Edge/Safari)
+--------------------------------------------------------- */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--surface-2);
+  border-radius: 100px;
+  border: 2px solid var(--bg);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--muted-2);
+}
+
+/* Firefox */
+* {
+  scrollbar-color: var(--surface-2) var(--bg);
+  scrollbar-width: thin;
+}
+
+/* ---------------------------------------------------------
+   Elemento de assinatura: "estrada tracejada"
+   (mesmo usado no header/footer/not-found — reutilizável)
+--------------------------------------------------------- */
+.road-rule {
+  height: 3px;
+  width: 100%;
+  background-image: repeating-linear-gradient(
+    90deg,
+    var(--muted-2) 0px, var(--muted-2) 18px,
+    transparent 18px, transparent 34px
+  );
+  opacity: 0.55;
+}
+
+.road-rule--brand {
+  background-image: repeating-linear-gradient(
+    90deg,
+    var(--blue) 0px, var(--blue) 14px,
+    transparent 14px, transparent 22px,
+    var(--purple) 22px, var(--purple) 36px,
+    transparent 36px, transparent 44px
+  );
+  opacity: 0.9;
+}

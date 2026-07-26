@@ -95,12 +95,29 @@ const LogoMark: FC<{ size?: number }> = ({ size = 34 }) => (
     <path d="M8 92 C20 74 30 68 40 60" stroke={`url(#${logoGradientId})`} strokeWidth={6} strokeLinecap="round" fill="none" />
   </svg>
 );
+import type {
+  CSSProperties,
+  FC,
+  ReactNode,
+  AnchorHTMLAttributes,
+} from "react";interface SocialIconProps
+  extends AnchorHTMLAttributes<HTMLAnchorElement> {
+  label: string;
+  children: ReactNode;
+}
 
-const SocialIcon: FC<{ href: string; label: string; children: ReactNode }> = ({ href, label, children }) => (
+const SocialIcon: FC<SocialIconProps> = ({
+  label,
+  children,
+  ...props
+}) => (
   <a
-    href={href}
+    {...props}
     aria-label={label}
-    style={{ color: COLORS.muted, borderColor: COLORS.border }}
+    style={{
+      color: COLORS.muted,
+      borderColor: COLORS.border,
+    }}
     className="flex h-8 w-8 items-center justify-center rounded-md border transition-colors hover:!text-[#EDF0F5] hover:!border-[#5C6478]"
   >
     {children}
@@ -185,15 +202,15 @@ const Footer: FC<FooterProps> = ({ year = new Date().getFullYear() }) => {
 
         <div className="flex flex-wrap items-center justify-between gap-4 py-5">
           <p style={{ color: COLORS.muted2 }} className="text-[13px]">
-            © {year} DevRoad. Feito por devs, para devs — código aberto para todo mundo.
+            © {year} DevRoad. Feito por devs — código aberto para todo mundo.
           </p>
           <div className="flex gap-2">
-            <SocialIcon href="https://github.com/devroad" label="GitHub">
+            <SocialIcon href="https://github.com/MeirelesDiogo" label="GitHub" target="_blank" rel="noopener noreferrer">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M12 .3a12 12 0 00-3.79 23.4c.6.11.82-.26.82-.58v-2.2c-3.34.72-4.04-1.6-4.04-1.6-.55-1.38-1.33-1.75-1.33-1.75-1.09-.74.08-.73.08-.73 1.2.09 1.84 1.24 1.84 1.24 1.07 1.83 2.8 1.3 3.49 1 .1-.78.42-1.3.76-1.6-2.66-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.13-.3-.54-1.52.12-3.18 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 016 0c2.29-1.55 3.3-1.23 3.3-1.23.66 1.66.25 2.88.12 3.18.77.84 1.24 1.91 1.24 3.22 0 4.61-2.81 5.63-5.49 5.92.43.37.81 1.1.81 2.22v3.29c0 .32.22.7.83.58A12 12 0 0012 .3z" />
               </svg>
             </SocialIcon>
-            <SocialIcon href="https://discord.gg/devroad" label="Discord">
+            <SocialIcon href="https://discord.gg/ju4wuck2CT" label="Discord" target="_blank" rel="noopener noreferrer">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M20.3 5.3A18 18 0 0015.6 4l-.24.48a13 13 0 013.9 1.6 15 15 0 00-14.5 0 13 13 0 013.9-1.6L8.4 4a18 18 0 00-4.7 1.3C1.2 9.7.6 14 .8 18.2a18 18 0 005.5 2.8l1.1-1.8a11 11 0 01-1.8-.9l.4-.3a13 13 0 0011.9 0l.4.3a11 11 0 01-1.8.9l1.1 1.8a18 18 0 005.5-2.8c.3-4.9-.6-9.1-3.2-12.9zM8.6 15.6c-1 0-1.9-1-1.9-2.2 0-1.2.8-2.2 1.9-2.2s1.9 1 1.9 2.2c0 1.2-.8 2.2-1.9 2.2zm6.8 0c-1 0-1.9-1-1.9-2.2 0-1.2.8-2.2 1.9-2.2s1.9 1 1.9 2.2c0 1.2-.8 2.2-1.9 2.2z" />
               </svg>
