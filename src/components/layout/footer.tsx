@@ -193,7 +193,7 @@ const Footer: FC<FooterProps> = ({ year = new Date().getFullYear() }) => {
 
         <div className="flex flex-wrap items-center justify-between gap-4 py-5">
           <p style={{ color: COLORS.muted2 }} className="text-[13px]">
-            © {year} DevRoad. Feito por devs — código aberto para todo mundo.
+            © {year} DevRoad. Feito por devs — código aberto para o mundo.
           </p>
           <div className="flex gap-2">
             <SocialIcon href="https://github.com/MeirelesDiogo" label="GitHub" target="_blank" rel="noopener noreferrer">
