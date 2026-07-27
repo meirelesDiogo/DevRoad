@@ -123,7 +123,7 @@ export default function LoginPage() {
           Voltar
         </Link>
 
-        <div className="w-full max-w-[380px]">
+        <div className="w-full max-w-[420px]">
           {/* logo — só aparece no mobile, já que o painel esquerdo some */}
           <div className="mb-10 flex justify-center lg:hidden">
             <Link href="/" className="flex items-center gap-2.5">
