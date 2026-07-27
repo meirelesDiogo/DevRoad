@@ -1,0 +1,21 @@
+
+services:
+  
+
+  postgres:
+    image: postgres:17
+
+
+    environment:
+      POSTGRES_USER: {$BD_USER}
+      POSTGRES_PASSWORD: {$BD_PASSWORD}
+      POSTGRES_DB: {BD_NAME}
+      env_file: 
+        - .env
+
+      volumes: 
+        - ./data/postgres:/var/lib/postgresql/data
+    ports:
+      - {BD_PORT}:${BD_PORT}
+
+    command:
