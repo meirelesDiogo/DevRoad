@@ -1,18 +1,19 @@
 "use client";
 
+import { signIn } from "next-auth/react";
+
 /**
  * SocialButtons — DevRoad
  * -------------------------------------------------------------
  * Local: src/components/auth/social-buttons.tsx
  *
- * Botões de login social maiores, com ícone à esquerda do texto,
- * borda sutil e efeito de hover consistente com o resto do tema.
- * Ajuste os `onClick`/`href` de cada botão pra apontar pro seu
- * fluxo real de OAuth (NextAuth, Clerk, Supabase, etc.).
+ * Agora conectado de verdade ao Auth.js (next-auth). Cada clique
+ * chama signIn(provider), que redireciona pro fluxo OAuth daquele
+ * provedor e, ao concluir, traz o usuário de volta pra callbackUrl.
  */
 
 type Provider = {
-  id: "google" | "github" | "discord" | "microsoft" | "apple" | "gitlab";
+  id: "google" | "github" | "discord" | "microsoft-entra-id" | "apple" | "gitlab";
   label: string;
   icon: React.ReactNode;
 };
@@ -40,7 +41,7 @@ const PROVIDERS: Provider[] = [
     ),
   },
   {
-    id: "microsoft",
+    id: "microsoft-entra-id",
     label: "Continuar com Microsoft",
     icon: (
       <svg width="20" height="20" viewBox="0 0 24 24">
@@ -90,9 +91,7 @@ const PRIMARY_IDS: Provider["id"][] = ["google", "github"];
 
 export function SocialButtons() {
   const handleLogin = (providerId: Provider["id"]) => {
-    // TODO: conectar ao seu fluxo real de OAuth
-    // ex (NextAuth): signIn(providerId)
-    console.log(`login com ${providerId}`);
+    signIn(providerId, { callbackUrl: "/" });
   };
 
   const primaryProviders = PROVIDERS.filter((p) => PRIMARY_IDS.includes(p.id));
