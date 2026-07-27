@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-
+import { OpenSourceSection } from "@/components/layout/open-source-section";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
 
@@ -40,6 +40,7 @@ export default function RootLayout({
       <body className="antialiased">
         <Header />
         {children}
+        <OpenSourceSection></OpenSourceSection>
         <Footer />
       </body>
     </html>

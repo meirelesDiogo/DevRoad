@@ -29,7 +29,7 @@ openGraph: {
  * IMPORTANTE sobre os ícones: no Next.js, arquivos dentro de
  * /public são referenciados SEM o prefixo "/public" — ou seja,
  * um arquivo em public/icons/front/html.svg vira só "/icons/front/html.svg".
- * Ajuste o array LANGUAGES abaixo com os caminhos reais dos seus ícones.
+ 
  */
 
 type Language = {
