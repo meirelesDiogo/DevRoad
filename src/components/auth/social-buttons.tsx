@@ -13,7 +13,7 @@ import { signIn } from "next-auth/react";
  */
 
 type Provider = {
-  id: "google" | "github" | "discord" | "microsoft-entra-id" | "apple" | "gitlab";
+  id: "google" | "github" | "discord" | "gitlab";
   label: string;
   icon: React.ReactNode;
 };
@@ -37,27 +37,6 @@ const PROVIDERS: Provider[] = [
     icon: (
       <svg width="20" height="20" viewBox="0 0 24 24" fill="var(--text)">
         <path d="M12 .3a12 12 0 00-3.79 23.4c.6.11.82-.26.82-.58v-2.2c-3.34.72-4.04-1.6-4.04-1.6-.55-1.38-1.33-1.75-1.33-1.75-1.09-.74.08-.73.08-.73 1.2.09 1.84 1.24 1.84 1.24 1.07 1.83 2.8 1.3 3.49 1 .1-.78.42-1.3.76-1.6-2.66-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.13-.3-.54-1.52.12-3.18 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 016 0c2.29-1.55 3.3-1.23 3.3-1.23.66 1.66.25 2.88.12 3.18.77.84 1.24 1.91 1.24 3.22 0 4.61-2.81 5.63-5.49 5.92.43.37.81 1.1.81 2.22v3.29c0 .32.22.7.83.58A12 12 0 0012 .3z" />
-      </svg>
-    ),
-  },
-  {
-    id: "microsoft-entra-id",
-    label: "Continuar com Microsoft",
-    icon: (
-      <svg width="20" height="20" viewBox="0 0 24 24">
-        <path fill="#F25022" d="M1 1h10.2v10.2H1z" />
-        <path fill="#00A4EF" d="M1 12.8h10.2V23H1z" />
-        <path fill="#7FBA00" d="M12.8 1H23v10.2H12.8z" />
-        <path fill="#FFB900" d="M12.8 12.8H23V23H12.8z" />
-      </svg>
-    ),
-  },
-  {
-    id: "apple",
-    label: "Continuar com Apple",
-    icon: (
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="var(--text)">
-        <path d="M17.05 12.5c-.03-2.4 1.96-3.55 2.05-3.61-1.12-1.64-2.86-1.86-3.48-1.89-1.48-.15-2.9.87-3.65.87-.76 0-1.92-.85-3.16-.83-1.62.02-3.13.95-3.97 2.4-1.7 2.94-.43 7.3 1.21 9.69.81 1.16 1.77 2.47 3.03 2.42 1.22-.05 1.68-.78 3.15-.78 1.47 0 1.88.78 3.16.75 1.31-.02 2.14-1.18 2.94-2.35.93-1.34 1.31-2.65 1.33-2.71-.03-.01-2.55-.98-2.58-3.87zM14.55 5.24c.67-.81 1.12-1.94 1-3.07-.96.04-2.13.64-2.83 1.44-.62.71-1.16 1.86-1.02 2.96 1.08.08 2.18-.55 2.85-1.33z" />
       </svg>
     ),
   },
@@ -123,7 +102,7 @@ export function SocialButtons() {
       </div>
 
       {/* provedores secundários — grade só com ícone */}
-      <div className="grid grid-cols-4 gap-3">
+      <div className="grid grid-cols-2 gap-3">
         {secondaryProviders.map((provider) => (
           <button
             key={provider.id}
