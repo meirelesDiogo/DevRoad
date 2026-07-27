@@ -58,7 +58,6 @@ A proposta é oferecer um caminho de aprendizado claro, organizado e acessível 
 * 🚀 Evoluir continuamente junto com meus estudos.
 
 ---
-
 # 🛠️ Stack Tecnológica
 
 ## Front-end
@@ -73,22 +72,119 @@ A proposta é oferecer um caminho de aprendizado claro, organizado e acessível 
 ## Back-end
 
 * Node.js
-* Express.js
 * Prisma ORM
+* PostgreSQL 17
+* Docker
+* Docker Compose
+
+## Banco de Dados
+
 * PostgreSQL
-* JWT
+* Prisma Migrations
+* Prisma Client
 
 ## Ferramentas
 
 * Git
 * GitHub
 * Vercel
-* Neon PostgreSQL
+* Docker Desktop
 * Figma
 * VS Code
 
+
+## Banco de Dados
+
+* PostgreSQL 17
+* Prisma ORM
+* Prisma Migrations
+* Prisma Client
+* Docker Compose
+
 ---
 
+# ⚙️ Configuração do Ambiente
+
+## Pré-requisitos
+
+Antes de iniciar o projeto, tenha instalado:
+
+* Node.js 22+
+* Docker Desktop
+* Git
+
+---
+
+## Instalação
+
+Clone o repositório:
+
+```bash
+git clone https://github.com/MeirelesDiogo/DevRoad.git
+Entre na pasta do projeto:
+
+cd DevRoad
+
+Instale as dependências:
+
+npm install
+Banco de Dados
+
+O DevRoad utiliza PostgreSQL executado através de um container Docker.
+
+Para iniciar o banco de dados:
+
+docker compose up -d
+
+O PostgreSQL ficará disponível em:
+
+localhost:5432
+Configuração das Variáveis de Ambiente
+
+Crie um arquivo .env na raiz do projeto:
+
+BD_USER=postgres
+BD_PASSWORD=postgres
+BD_PORT=5432
+BD_HOST=localhost
+BD_NAME=DevRoad
+Prisma ORM
+
+O projeto utiliza Prisma como ORM para comunicação com o banco de dados.
+
+Principais recursos utilizados:
+
+Modelagem do banco através do Prisma Schema
+Controle de migrations
+Geração do Prisma Client
+Integração com PostgreSQL
+
+Executar migrations:
+
+npx prisma migrate dev
+
+Gerar Prisma Client:
+
+npx prisma generate
+
+Abrir o Prisma Studio:
+
+npx prisma studio
+🏗️ Arquitetura Atual
+
+O DevRoad utiliza uma arquitetura baseada em:
+
+Next.js 15
+      │
+      ├── React 19
+      │
+      ├── TypeScript
+      │
+      ├── Prisma ORM
+      │
+      └── PostgreSQL
+              │
+              └── Docker Container
 # 📌 Funcionalidades Planejadas
 
 ### Plataforma
