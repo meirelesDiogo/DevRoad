@@ -1,3 +1,4 @@
+import { signIn } from "next-auth/react";
 
 export default function login(){
 return(
@@ -7,6 +8,19 @@ return(
         <label>Nome:</label>
         <input type="text" />
     </form>
+    
+<button
+  onClick={() => signIn("google")}
+>
+  Continuar com Google
+</button>
+
+
+<button
+  onClick={() => signIn("github")}
+>
+  Continuar com GitHub
+</button>
 </div>
 );
 };
