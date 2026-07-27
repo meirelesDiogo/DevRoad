@@ -1,26 +1,11 @@
-import { signIn } from "next-auth/react";
+import { SocialButtons } from "@/components/auth/social-buttons";
 
-export default function login(){
-return(
-<div>
-    <h1>Login</h1>
-    <form method="POST">
-        <label>Nome:</label>
-        <input type="text" />
-    </form>
-    
-<button
-  onClick={() => signIn("google")}
->
-  Continuar com Google
-</button>
-
-
-<button
-  onClick={() => signIn("github")}
->
-  Continuar com GitHub
-</button>
-</div>
-);
-};
+export default function LoginPage() {
+  return (
+    <main>
+      <h1>Login</h1>
+      
+      <SocialButtons />
+    </main>
+  );
+}
