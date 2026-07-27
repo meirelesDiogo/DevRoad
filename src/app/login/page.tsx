@@ -1,17 +1,23 @@
 import Link from "next/link";
+import Image from "next/image";
 import { SocialButtons } from "@/components/auth/social-buttons";
 
 /**
  * Login — DevRoad
  * -------------------------------------------------------------
- * Local: src/app/entrar/page.tsx (ou onde sua rota de login estiver)
- * Mantém o <SocialButtons /> como estava — só estilizei a página
- * ao redor dele (card, logo, glow, textos de apoio).
+ * Local: src/app/entrar/page.tsx (ajuste o caminho pra sua rota real)
+ *
+ * Layout split-screen: painel de marca à esquerda (some no mobile),
+ * formulário limpo à direita. Padrão usado em telas de login de
+ * produtos SaaS premium (Linear, Vercel, Stripe).
+ *
+ * <SocialButtons /> continua exatamente como estava — só o entorno
+ * foi redesenhado.
  */
 
 const logoGradientId = "devroad-login-logo-gradient";
 
-function LogoMark({ size = 40 }: { size?: number }) {
+function LogoMark({ size = 36 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
       <defs>
@@ -32,53 +38,109 @@ function LogoMark({ size = 40 }: { size?: number }) {
   );
 }
 
+const FEATURES = [
+  "Roadmaps guiados do zero ao avançado",
+  "Aulas, exercícios e projetos práticos",
+  "100% gratuito, para sempre — open source",
+];
+
 export default function LoginPage() {
   return (
-    <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[var(--bg)] px-6 py-16">
-      {/* glow de fundo */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute left-1/2 top-1/2 h-[500px] w-[700px] -translate-x-1/2 -translate-y-1/2 rounded-full opacity-20 blur-[130px]"
-        style={{ background: "linear-gradient(90deg, var(--blue), var(--purple))" }}
-      />
-
-      {/* voltar pro início */}
-      <Link
-        href="/"
-        className="absolute left-6 top-6 flex items-center gap-1.5 text-sm font-medium transition-colors hover:text-[var(--text)]"
-        style={{ color: "var(--muted)" }}
-      >
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round">
-          <path d="M19 12H5M12 19l-7-7 7-7" />
-        </svg>
-        Voltar para o início
-      </Link>
-
-      {/* card de login */}
-      <div className="group relative w-full max-w-[400px]">
-        {/* glow ao redor do card, mesmo padrão usado no header/terminal */}
-        <div className="absolute -inset-[1px] rounded-2xl bg-gradient-to-r from-[#2E8BFF] via-[#7C5CFF] to-[#2E8BFF] opacity-20 blur-md transition-all duration-500 group-hover:opacity-40" />
-
+    <main className="grid min-h-screen grid-cols-1 lg:grid-cols-2">
+      {/* ================= PAINEL DE MARCA (some no mobile) ================= */}
+      <div className="relative hidden overflow-hidden lg:flex lg:flex-col lg:justify-between" style={{ backgroundColor: "var(--surface)" }}>
+        {/* imagem da estrada como textura de fundo */}
+        <Image src="/estrada.png" alt="" fill priority className="object-cover opacity-25" />
         <div
-          className="relative rounded-2xl border px-8 py-10 shadow-2xl backdrop-blur"
-          style={{ backgroundColor: "rgba(16,20,29,0.95)", borderColor: "var(--border)" }}
-        >
-          {/* logo */}
-          <div className="mb-8 flex flex-col items-center gap-3">
+          aria-hidden
+          className="absolute inset-0"
+          style={{ background: "linear-gradient(180deg, var(--surface) 0%, rgba(16,20,29,0.85) 60%, var(--surface) 100%)" }}
+        />
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -left-20 top-1/3 h-[420px] w-[420px] rounded-full opacity-25 blur-[120px]"
+          style={{ background: "linear-gradient(135deg, var(--blue), var(--purple))" }}
+        />
+
+        {/* topo: logo */}
+        <div className="relative z-10 p-10">
+          <Link href="/" className="flex items-center gap-2.5">
             <LogoMark />
             <span
               style={{ fontFamily: "'Space Grotesk', sans-serif", color: "var(--text)" }}
-              className="text-[19px] font-bold tracking-tight"
+              className="text-lg font-bold tracking-tight"
             >
               <span style={{ color: "var(--blue)" }}>Dev</span>Road
             </span>
+          </Link>
+        </div>
+
+        {/* meio: mensagem de marca */}
+        <div className="relative z-10 px-10 pb-16">
+          <p
+            style={{ fontFamily: "'JetBrains Mono', monospace", color: "var(--blue)" }}
+            className="mb-4 text-xs font-semibold uppercase tracking-[0.14em]"
+          >
+            Aprenda · Pratique · Evolua
+          </p>
+
+          <h2
+            style={{ fontFamily: "'Space Grotesk', sans-serif", color: "var(--text)" }}
+            className="mb-8 max-w-sm text-3xl font-bold leading-tight tracking-tight"
+          >
+            Sua jornada de desenvolvedor{" "}
+            <span className="bg-gradient-to-r from-[var(--blue)] to-[var(--purple)] bg-clip-text text-transparent">
+              começa aqui
+            </span>
+            .
+          </h2>
+
+          <ul className="flex flex-col gap-3.5">
+            {FEATURES.map((item) => (
+              <li key={item} className="flex items-start gap-2.5 text-sm" style={{ color: "var(--muted)" }}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round" className="mt-0.5 shrink-0">
+                  <path d="M20 6L9 17l-5-5" />
+                </svg>
+                <span>{item}</span>
+              </li>
+            ))}
+          </ul>
+
+          <div className="road-rule--brand road-rule mt-10 w-32" />
+        </div>
+      </div>
+
+      {/* ================= FORMULÁRIO ================= */}
+      <div className="relative flex items-center justify-center bg-[var(--bg)] px-6 py-16">
+        <Link
+          href="/"
+          className="absolute left-6 top-6 flex items-center gap-1.5 text-sm font-medium transition-colors hover:text-[var(--text)] lg:hidden"
+          style={{ color: "var(--muted)" }}
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round">
+            <path d="M19 12H5M12 19l-7-7 7-7" />
+          </svg>
+          Voltar
+        </Link>
+
+        <div className="w-full max-w-[380px]">
+          {/* logo — só aparece no mobile, já que o painel esquerdo some */}
+          <div className="mb-10 flex justify-center lg:hidden">
+            <Link href="/" className="flex items-center gap-2.5">
+              <LogoMark />
+              <span
+                style={{ fontFamily: "'Space Grotesk', sans-serif", color: "var(--text)" }}
+                className="text-lg font-bold tracking-tight"
+              >
+                <span style={{ color: "var(--blue)" }}>Dev</span>Road
+              </span>
+            </Link>
           </div>
 
-          {/* cabeçalho */}
-          <div className="mb-8 text-center">
+          <div className="mb-9">
             <h1
               style={{ fontFamily: "'Space Grotesk', sans-serif", color: "var(--text)" }}
-              className="mb-2 text-2xl font-bold tracking-tight"
+              className="mb-2 text-[28px] font-bold tracking-tight"
             >
               Bem-vindo de volta
             </h1>
@@ -87,33 +149,35 @@ export default function LoginPage() {
             </p>
           </div>
 
-          {/* botões sociais (mantidos como já estavam) */}
           <SocialButtons />
 
-          {/* rodapé do card */}
-          <div className="mt-8 flex flex-col items-center gap-4">
-            <div className="road-rule w-full opacity-40" />
-
-            <p className="text-sm" style={{ color: "var(--muted)" }}>
-              Não tem conta?{" "}
-              <Link href="/cadastro" style={{ color: "var(--blue)" }} className="font-semibold hover:underline">
-                Criar conta grátis
-              </Link>
-            </p>
+          <div className="mt-9 flex items-center gap-3">
+            <span className="h-px flex-1" style={{ backgroundColor: "var(--border)" }} />
+            <span style={{ color: "var(--muted-2)", fontFamily: "'JetBrains Mono', monospace" }} className="text-[11px] uppercase tracking-wider">
+              DevRoad
+            </span>
+            <span className="h-px flex-1" style={{ backgroundColor: "var(--border)" }} />
           </div>
-        </div>
 
-        <p className="mt-6 text-center text-xs leading-relaxed" style={{ color: "var(--muted-2)" }}>
-          Ao continuar, você concorda com nossos{" "}
-          <Link href="/termos" className="underline hover:text-[var(--muted)]">
-            Termos de uso
-          </Link>{" "}
-          e nossa{" "}
-          <Link href="/privacidade" className="underline hover:text-[var(--muted)]">
-            Política de privacidade
-          </Link>
-          .
-        </p>
+          <p className="mt-7 text-center text-sm" style={{ color: "var(--muted)" }}>
+            Não tem conta?{" "}
+            <Link href="/cadastro" style={{ color: "var(--blue)" }} className="font-semibold hover:underline">
+              Criar conta grátis
+            </Link>
+          </p>
+
+          <p className="mt-6 text-center text-xs leading-relaxed" style={{ color: "var(--muted-2)" }}>
+            Ao continuar, você concorda com nossos{" "}
+            <Link href="/termos" className="underline hover:text-[var(--muted)]">
+              Termos de uso
+            </Link>{" "}
+            e nossa{" "}
+            <Link href="/privacidade" className="underline hover:text-[var(--muted)]">
+              Política de privacidade
+            </Link>
+            .
+          </p>
+        </div>
       </div>
     </main>
   );
