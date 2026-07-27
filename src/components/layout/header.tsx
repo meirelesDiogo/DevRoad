@@ -186,7 +186,7 @@ const Header: FC<HeaderProps> = ({ activePath = "/roadmaps", isAuthenticated = f
           </div>
           <div style={{ borderTop: `1px solid ${COLORS.border}` }} className="flex gap-2.5 px-6 py-3.5">
             <a
-              href="/entrar"
+              href="/login"
               style={{ color: COLORS.text, borderColor: COLORS.border }}
               className="flex flex-1 items-center justify-center rounded-lg border py-2.5 text-sm font-semibold"
             >
