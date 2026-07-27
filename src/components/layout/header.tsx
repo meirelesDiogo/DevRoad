@@ -126,7 +126,7 @@ const Header: FC<HeaderProps> = ({ activePath = "/roadmaps", isAuthenticated = f
           {!isAuthenticated ? (
             <>
               <a
-                href="/entrar"
+                href="/login"
                 style={{ color: COLORS.text }}
                 className="hidden rounded-lg px-4 py-2 text-sm font-semibold transition-colors hover:bg-[#151A24] md:block"
               >
@@ -186,7 +186,7 @@ const Header: FC<HeaderProps> = ({ activePath = "/roadmaps", isAuthenticated = f
           </div>
           <div style={{ borderTop: `1px solid ${COLORS.border}` }} className="flex gap-2.5 px-6 py-3.5">
             <a
-              href="/login"
+              href="/entrar"
               style={{ color: COLORS.text, borderColor: COLORS.border }}
               className="flex flex-1 items-center justify-center rounded-lg border py-2.5 text-sm font-semibold"
             >
