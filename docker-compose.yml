@@ -1,21 +1,20 @@
-
 services:
-  
-
   postgres:
     image: postgres:17
+    container_name: devroad-postgres
 
+    restart: unless-stopped
+
+    env_file:
+      - .env
 
     environment:
-      POSTGRES_USER: {$BD_USER}
-      POSTGRES_PASSWORD: {$BD_PASSWORD}
-      POSTGRES_DB: {BD_NAME}
-      env_file: 
-        - .env
+      POSTGRES_USER: ${BD_USER}
+      POSTGRES_PASSWORD: ${BD_PASSWORD}
+      POSTGRES_DB: ${BD_NAME}
 
-      volumes: 
-        - ./data/postgres:/var/lib/postgresql/data
     ports:
-      - {BD_PORT}:${BD_PORT}
+      - "${BD_PORT}:5432"
 
-    command:
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data
