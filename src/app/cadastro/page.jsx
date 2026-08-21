@@ -1,13 +1,215 @@
+'use client';
 
-export default function cadastro(){
-    return(
-        <div>
-            <h1>Cadastre-Se</h1>
-            <form method="POST">
-                <label htmlFor="">Nome:</label>
-                <input type="text"  />
+import { useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 
-            </form>
+/**
+ * Cadastro — DevRoad
+ * -------------------------------------------------------------
+ * Local: src/app/cadastro/page.jsx
+ * 
+ * Client Component integrado com a API (/api/users) para criação de conta.
+ * Contém proteção contra respostas HTML indesejadas (Erros 404/500).
+ */
+
+export default function CadastroPage() {
+  const router = useRouter();
+  
+  // Estados para controlar os campos do formulário
+  const [formData, setFormData] = useState({
+    nome: "",
+    email: "",
+    telefone: "",
+    senha: ""
+  });
+
+  // Estados para feedback visual do usuário
+  const [erro, setErro] = useState("");
+  const [sucesso, setSucesso] = useState("");
+  const [carregando, setCarregando] = useState(false);
+
+  // Atualiza o estado conforme o usuário digita nos campos
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  // Função disparada ao enviar o formulário
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setErro("");
+    setSucesso("");
+    setCarregando(true);
+
+    try {
+      const response = await fetch("/api/users", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(formData)
+      });
+
+      // 1. Captura o conteúdo bruto da resposta como texto primeiro
+      const textoResposta = await response.text();
+
+      // 2. Tenta converter para JSON apenas se a resposta não for um HTML
+      let dados = {};
+      try {
+        dados = JSON.parse(textoResposta);
+      } catch (parseError) {
+        // Se falhar o parse, significa que o Next.js enviou uma página de erro HTML (Ex: 404 ou 500)
+        console.error("Resposta bruta do servidor (Não é um JSON válido):", textoResposta);
+        throw new Error(`O servidor retornou HTML em vez de JSON (Status HTTP ${response.status}). Abra o console (F12) para ver o erro.`);
+      }
+
+      if (!response.ok) {
+        throw new Error(dados.error || "Ocorreu um erro ao criar a conta.");
+      }
+
+      setSucesso("Conta criada com sucesso! Redirecionando...");
+      
+      // Limpa o formulário
+      setFormData({ nome: "", email: "", telefone: "", senha: "" });
+
+      // Redireciona o usuário para a página de login após 2 segundos
+      setTimeout(() => {
+        router.push("/login");
+      }, 2000);
+
+    } catch (err) {
+      setErro(err.message);
+    } finally {
+      setCarregando(false);
+    }
+  };
+
+  return (
+    <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#0A0D14] px-6 py-16">
+      {/* Glows decorativos de fundo */}
+      <div aria-hidden className="pointer-events-none absolute left-1/2 top-0 h-[500px] w-[800px] -translate-x-1/2 -translate-y-1/2 rounded-full opacity-25 blur-[130px]" style={{ background: "linear-gradient(90deg, var(--blue, #2E8BFF), var(--purple, #7C5CFF))" }} />
+      <div aria-hidden className="pointer-events-none absolute bottom-0 right-0 h-[300px] w-[300px] translate-x-1/3 translate-y-1/3 rounded-full opacity-20 blur-[100px]" style={{ background: "var(--purple, #7C5CFF)" }} />
+
+      {/* Voltar pro início */}
+      <Link href="/" className="absolute left-6 top-6 z-10 flex items-center gap-1.5 text-sm font-medium transition-colors hover:text-[#EDF0F5]" style={{ color: "var(--muted, #8A93A6)" }}>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round">
+          <path d="M19 12H5M12 19l-7-7 7-7" />
+        </svg>
+        Voltar para o início
+      </Link>
+
+      {/* Card Central */}
+      <div className="group relative z-10 w-full max-w-[440px]">
+        <div className="absolute -inset-[1px] rounded-3xl bg-gradient-to-r from-[#2E8BFF] via-[#7C5CFF] to-[#2E8BFF] opacity-25 blur-md transition-all duration-500 group-hover:opacity-50 group-hover:blur-lg" />
+        
+        <div className="relative rounded-3xl border px-9 py-11 shadow-2xl backdrop-blur-xl transition-transform duration-300 group-hover:-translate-y-1" style={{ backgroundColor: "rgba(16,20,29,0.72)", borderColor: "var(--border, #1E2430)" }}>
+          
+          {/* Cabeçalho */}
+          <div className="mb-8 text-center">
+            <h1 style={{ fontFamily: "'Space Grotesk', sans-serif" }} className="mb-2 text-2xl font-bold tracking-tight text-[#EDF0F5]">
+              Crie sua conta no <span style={{ color: "var(--blue, #2E8BFF)" }}>Dev</span>Road
+            </h1>
+            <p style={{ color: "var(--muted, #8A93A6)" }} className="text-sm leading-relaxed">
+              Comece a mapear sua jornada e marcar seu progresso hoje.
+            </p>
+          </div>
+
+          {/* Alertas de Feedback Dinâmicos */}
+          {erro && (
+            <div className="mb-4 rounded-xl border border-red-500/30 bg-red-500/10 p-3 text-center text-xs font-medium text-red-400 break-words">
+              {erro}
+            </div>
+          )}
+          {sucesso && (
+            <div className="mb-4 rounded-xl border border-green-500/30 bg-green-500/10 p-3 text-center text-xs font-medium text-green-400">
+              {sucesso}
+            </div>
+          )}
+
+          {/* Formulário */}
+          <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+            <div className="flex flex-col gap-1.5">
+              <label htmlFor="nome" className="text-xs font-semibold uppercase tracking-wider text-[#EDF0F5]">Nome Completo:</label>
+              <input 
+                id="nome"
+                name="nome"
+                type="text" 
+                required
+                value={formData.nome}
+                onChange={handleChange}
+                placeholder="Ex: João Silva" 
+                className="w-full rounded-xl border bg-[#10141D] px-4 py-3 text-sm text-[#EDF0F5] placeholder-[#5C6478] outline-none transition-all focus:border-[#2E8BFF]"
+                style={{ borderColor: "var(--border, #1E2430)" }}
+              />
+            </div>
+
+            <div className="flex flex-col gap-1.5">
+              <label htmlFor="email" className="text-xs font-semibold uppercase tracking-wider text-[#EDF0F5]">E-mail:</label>
+              <input 
+                id="email"
+                name="email"
+                type="email" 
+                required
+                value={formData.email}
+                onChange={handleChange}
+                placeholder="seu@email.com" 
+                className="w-full rounded-xl border bg-[#10141D] px-4 py-3 text-sm text-[#EDF0F5] placeholder-[#5C6478] outline-none transition-all focus:border-[#2E8BFF]"
+                style={{ borderColor: "var(--border, #1E2430)" }}
+              />
+            </div>
+
+            <div className="flex flex-col gap-1.5">
+              <label htmlFor="telefone" className="text-xs font-semibold uppercase tracking-wider text-[#EDF0F5]">Telefone (Opcional):</label>
+              <input 
+                id="telefone"
+                name="telefone"
+                type="tel" 
+                value={formData.telefone}
+                onChange={handleChange}
+                placeholder="(00) 00000-0000" 
+                className="w-full rounded-xl border bg-[#10141D] px-4 py-3 text-sm text-[#EDF0F5] placeholder-[#5C6478] outline-none transition-all focus:border-[#2E8BFF]"
+                style={{ borderColor: "var(--border, #1E2430)" }}
+              />
+            </div>
+
+            <div className="flex flex-col gap-1.5">
+              <label htmlFor="senha" className="text-xs font-semibold uppercase tracking-wider text-[#EDF0F5]">Senha:</label>
+              <input 
+                id="senha"
+                name="senha"
+                type="password" 
+                required
+                value={formData.senha}
+                onChange={handleChange}
+                placeholder="••••••••" 
+                className="w-full rounded-xl border bg-[#10141D] px-4 py-3 text-sm text-[#EDF0F5] placeholder-[#5C6478] outline-none transition-all focus:border-[#2E8BFF]"
+                style={{ borderColor: "var(--border, #1E2430)" }}
+              />
+            </div>
+
+            <button 
+              type="submit"
+              disabled={carregando}
+              className="mt-2 w-full rounded-xl py-3 text-sm font-semibold text-[#08090C] transition-all hover:opacity-90 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
+              style={{ background: "linear-gradient(90deg, #2E8BFF, #7C5CFF)" }}
+            >
+              {carregando ? "Criando conta..." : "Criar minha conta grátis"}
+            </button>
+          </form>
+
+          {/* Rodapé do Card */}
+          <p className="mt-8 text-center text-sm" style={{ color: "var(--muted, #8A93A6)" }}>
+            Já tem uma conta?{" "}
+            <Link href="/login" style={{ color: "var(--blue, #2E8BFF)" }} className="font-semibold hover:underline">
+              Fazer login
+            </Link>
+          </p>
         </div>
-    );
+      </div>
+    </main>
+  );
 }

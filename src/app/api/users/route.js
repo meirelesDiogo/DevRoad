@@ -1,12 +1,21 @@
 import { NextResponse } from "next/server";
+import pg from "pg";
+import { PrismaPg } from "@prisma/adapter-pg";
 // Importa o Prisma a partir do local customizado definido no seu schema.prisma
 import { PrismaClient } from "../../../generated/prisma";
 
-const prisma = new PrismaClient();
+// Configura o Pool de conexões do PostgreSQL nativo usando a variável de ambiente do Docker
+const pool = new pg.Pool({ connectionString: process.env.DATABASE_URL });
+
+// Cria o adaptador exigido obrigatoriamente a partir do Prisma v7
+const adapter = new PrismaPg(pool);
+
+// Instancia o cliente injetando o Driver Adapter configurado
+const prisma = new PrismaClient({ adapter });
 
 /**
  * GET /api/users
- * Lista todos os usuários cadastrados (sem retornar o campo de senha por segurança)
+ * Lista todos os usuários cadastrados
  */
 export async function GET() {
   try {
@@ -43,7 +52,6 @@ export async function POST(request) {
     const body = await request.json();
     const { nome, email, telefone, senha, foto } = body;
 
-    // Validação de campos obrigatórios conforme o schema
     if (!nome || !email || !senha) {
       return NextResponse.json(
         { error: "Os campos 'nome', 'email' e 'senha' são obrigatórios." },
@@ -51,13 +59,12 @@ export async function POST(request) {
       );
     }
 
-    // Cria o registro respeitando o mapeamento do banco de dados
     const novoUsuario = await prisma.user.create({
       data: {
         nome,
         email,
         telefone: telefone || null,
-        senha, // Importante: criptografar esta senha antes de salvar!
+        senha, 
         foto: foto || null,
       },
       select: {
@@ -74,7 +81,6 @@ export async function POST(request) {
   } catch (error) {
     console.error("Erro ao criar usuário:", error);
 
-    // Captura erro de restrição única (P2002) do Prisma para e-mails duplicados
     if (error.code === "P2002") {
       return NextResponse.json(
         { error: "Este e-mail já está cadastrado em nossa plataforma." },

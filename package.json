@@ -8,11 +8,13 @@
     "start": "next start"
   },
   "dependencies": {
+    "@prisma/adapter-pg": "^7.9.1",
     "@prisma/client": "^7.9.1",
     "lucide-react": "^1.27.0",
     "motion": "^12.42.2",
     "next": "16.2.12",
     "next-auth": "^5.0.0-beta.32",
+    "pg": "^8.23.0",
     "react": "19.2.4",
     "react-dom": "19.2.4"
   },
