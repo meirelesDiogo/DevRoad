@@ -49,14 +49,37 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       }
     }),
   ],
-  callbacks: {
+    callbacks: {
+    // Controla o que vai para o Token JWT criptografado no navegador
     async jwt({ token, user }) {
-      if (user) token.id = user.id;
+      if (user) {
+        token.id = user.id;
+        token.email = user.email;
+        token.name = user.name;
+        // ❌ REMOVEMOS o token.picture = user.image para não inflar o cabeçalho
+      }
       return token;
     },
+    
+    // Controla o que fica disponível no front-end via useSession()
     async session({ session, token }) {
-      if (token?.id) session.user.id = token.id;
+      if (token?.id) {
+        session.user.id = token.id;
+        session.user.email = token.email;
+        session.user.name = token.name;
+        
+        // ✨ Buscamos a foto sob demanda direto no banco para não pesar no cookie
+        try {
+          const dadosUsuario = await prisma.user.findUnique({
+            where: { id: Number(token.id) },
+            select: { foto: true }
+          });
+          session.user.image = dadosUsuario?.foto || null;
+        } catch (dbError) {
+          console.error("Erro ao buscar foto do usuário na sessão:", dbError);
+          session.user.image = null;
+        }
+      }
       return session;
     }
   }
-});
