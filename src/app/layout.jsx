@@ -7,6 +7,10 @@ import { SessionProvider } from "next-auth/react"; // 🔄 Importa o gerenciador
 export const metadata = {
   title: "DevRoad - Aprenda a programar do zero",
   description: "Roadmaps, aulas e projetos práticos para você sair do zero e chegar lá — sem pagar nada por isso.",
+  robots: {
+    index: true,
+    follow: true,
+  }
 };
 
 export default function RootLayout({ children }) {
