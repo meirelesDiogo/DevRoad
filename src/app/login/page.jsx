@@ -1,5 +1,10 @@
+'use client';
+
+import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { signIn } from "next-auth/react";
 import { SocialButtons } from "@/components/auth/social-buttons";
 
 /**
@@ -7,9 +12,7 @@ import { SocialButtons } from "@/components/auth/social-buttons";
  * -------------------------------------------------------------
  * Local: src/app/login/page.jsx
  *
- * Layout centralizado (sem divisão de tela): imagem da estrada
- * como fundo cheio, com overlay escuro, e um card em glassmorphism
- * flutuando no centro. Mais compacto que a versão split-screen.
+ * Card em glassmorphism totalmente funcional e integrado ao NextAuth.js.
  */
 
 const logoGradientId = "devroad-login-logo-gradient";
@@ -35,6 +38,50 @@ function LogoMark({ size = 44 }) {
 const BADGES = ["Roadmaps guiados", "Aulas práticas", "100% gratuito"];
 
 export default function LoginPage() {
+  const router = useRouter();
+  
+  // Estados para gerenciar as credenciais digitadas
+  const [email, setEmail] = useState("");
+  const [senha, setSenha] = useState("");
+  
+  // Estados para feedback visual de carregamento ou erros
+  const [erro, setErro] = useState("");
+  const [carregando, setCarregando] = useState(false);
+
+  // Submissão do login por credenciais (NextAuth)
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setErro("");
+    setCarregando(true);
+
+    try {
+      // Dispara a tentativa de autenticação usando o NextAuth
+      const result = await signIn("credentials", {
+        redirect: false,
+        email,
+        senha,
+      });
+
+      if (result?.error) {
+        // Trata os erros comuns enviados pelo provedor
+        if (result.error === "CredentialsSignin") {
+          setErro("E-mail ou senha incorretos.");
+        } else {
+          setErro("Erro ao efetuar o login. Tente novamente.");
+        }
+      } else {
+        // Redireciona para a home se o login der certo
+        router.push("/");
+        router.refresh();
+      }
+    } catch (err) {
+      console.error(err);
+      setErro("Erro interno do servidor.");
+    } finally {
+      setCarregando(false);
+    }
+  };
+
   return (
     <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[var(--bg)] px-6 py-16">
       {/* imagem de fundo cheia */}
@@ -78,13 +125,66 @@ export default function LoginPage() {
           </div>
 
           {/* cabeçalho */}
-          <div className="mb-8 text-center">
+          <div className="mb-6 text-center">
             <h1 style={{ fontFamily: "'Space Grotesk', sans-serif", color: "var(--text)" }} className="mb-2 text-2xl font-bold tracking-tight">
               Entre para continuar sua jornada
             </h1>
             <p style={{ color: "var(--muted)" }} className="text-sm leading-relaxed">
               Acompanhe seu progresso e retome de onde parou.
             </p>
+          </div>
+
+          {/* Feedback de erro */}
+          {erro && (
+            <div className="mb-4 rounded-xl border border-red-500/30 bg-red-500/10 p-3 text-center text-xs font-medium text-red-400">
+              {erro}
+            </div>
+          )}
+
+          {/* Formulário de Credenciais */}
+          <form onSubmit={handleSubmit} className="mb-5 flex flex-col gap-4">
+            <div className="flex flex-col gap-1.5">
+              <label htmlFor="email" className="text-xs font-semibold uppercase tracking-wider" style={{ color: "var(--text)" }}>E-mail:</label>
+              <input 
+                id="email"
+                type="email" 
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="seu@email.com" 
+                className="w-full rounded-xl border bg-[#10141D] px-4 py-3 text-sm outline-none transition-all focus:border-[#2E8BFF]"
+                style={{ borderColor: "var(--border)", color: "var(--text)" }}
+              />
+            </div>
+
+            <div className="flex flex-col gap-1.5">
+              <label htmlFor="senha" className="text-xs font-semibold uppercase tracking-wider" style={{ color: "var(--text)" }}>Senha:</label>
+              <input 
+                id="senha"
+                type="password" 
+                required
+                value={senha}
+                onChange={(e) => setSenha(e.target.value)}
+                placeholder="••••••••" 
+                className="w-full rounded-xl border bg-[#10141D] px-4 py-3 text-sm outline-none transition-all focus:border-[#2E8BFF]"
+                style={{ borderColor: "var(--border)", color: "var(--text)" }}
+              />
+            </div>
+
+            <button 
+              type="submit"
+              disabled={carregando}
+              className="mt-2 w-full rounded-xl py-3 text-sm font-semibold text-[#08090C] transition-all hover:opacity-90 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
+              style={{ background: "linear-gradient(90deg, #2E8BFF, #7C5CFF)" }}
+            >
+              {carregando ? "Entrando..." : "Acessar plataforma"}
+            </button>
+          </form>
+
+          {/* Divisor */}
+          <div className="relative mb-5 flex items-center justify-center">
+            <div className="absolute w-full border-t" style={{ borderColor: "var(--border)" }} />
+            <span className="relative bg-[#111520] px-3 text-xs uppercase tracking-wider" style={{ color: "var(--muted)" }}>ou</span>
           </div>
 
           <SocialButtons />
@@ -101,7 +201,7 @@ export default function LoginPage() {
           Ao continuar, você concorda com nossos{" "}
           <Link href="/termos" className="underline hover:text-[var(--muted)]">
             Termos de uso
-          </Link>{" "}
+          </Link>{ " " }
           e nossa{" "}
           <Link href="/privacidade" className="underline hover:text-[var(--muted)]">
             Política de privacidade
