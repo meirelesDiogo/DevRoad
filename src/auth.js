@@ -1,6 +1,6 @@
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import authConfig from "./auth.config"; // 🔄 Importa a base estática do Edge
+import authConfig from "./auth.config";
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import pg from "pg";
@@ -12,11 +12,11 @@ const adapter = new PrismaPg(pool);
 const prisma = new PrismaClient({ adapter });
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
-  ...authConfig, // 🔄 Copia as configurações do arquivo base
+  ...authConfig,
   providers: [
-    ...authConfig.providers, // Mantém os logins sociais
+    ...authConfig.providers,
     
-    // 🔒 Provedor de Login por E-mail e Senha (Isolado no ambiente de Servidor)
+    // 🔒 Provedor de Login por E-mail e Senha
     CredentialsProvider({
       name: "Credentials",
       credentials: {
@@ -49,14 +49,13 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       }
     }),
   ],
-    callbacks: {
-    // Controla o que vai para o Token JWT criptografado no navegador
+  callbacks: {
+    // Controla o que vai para o Token JWT criptografado no navegador (mantém leve)
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
         token.email = user.email;
         token.name = user.name;
-        // ❌ REMOVEMOS o token.picture = user.image para não inflar o cabeçalho
       }
       return token;
     },
@@ -68,7 +67,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         session.user.email = token.email;
         session.user.name = token.name;
         
-        // ✨ Buscamos a foto sob demanda direto no banco para não pesar no cookie
+        // ✨ Busca a foto sob demanda direto na Neon para não pesar no cookie
         try {
           const dadosUsuario = await prisma.user.findUnique({
             where: { id: Number(token.id) },
@@ -83,3 +82,4 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       return session;
     }
   }
+}); 
