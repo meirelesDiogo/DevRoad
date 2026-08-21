@@ -16,7 +16,7 @@ model User {
   email       String   @unique @db.VarChar(150)
   telefone    String?  @db.VarChar(20)
   senha       String   @db.VarChar(255)
-  String?  @db.Text
+  foto        String?  @db.Text
   criadoEm    DateTime @default(now()) @map("criado_em")
 
   progresso   Progresso[]
