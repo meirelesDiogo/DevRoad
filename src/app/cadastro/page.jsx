@@ -10,7 +10,7 @@ import { useRouter } from "next/navigation";
  * Local: src/app/cadastro/page.jsx
  * 
  * Client Component integrado com a API (/api/users) para criação de conta.
- * Contém proteção contra respostas HTML indesejadas (Erros 404/500).
+ * Suporta upload de foto de perfil convertido automaticamente para Base64.
  */
 
 export default function CadastroPage() {
@@ -21,7 +21,8 @@ export default function CadastroPage() {
     nome: "",
     email: "",
     telefone: "",
-    senha: ""
+    senha: "",
+    foto: "" // Armazenará a string Base64 da imagem
   });
 
   // Estados para feedback visual do usuário
@@ -29,13 +30,36 @@ export default function CadastroPage() {
   const [sucesso, setSucesso] = useState("");
   const [carregando, setCarregando] = useState(false);
 
-  // Atualiza o estado conforme o usuário digita nos campos
+  // Atualiza o estado conforme o usuário digita nos campos comuns
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
       [name]: value
     }));
+  };
+
+  // Intercepta o arquivo de imagem e converte para string Base64
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    
+    if (file) {
+      // Validação simples de tamanho (evita carregar arquivos gigantescos no banco, limite de 1MB recomendado)
+      if (file.size > 1024 * 1024) {
+        setErro("Escolha uma foto de perfil menor que 1MB.");
+        e.target.value = ""; // Limpa o input
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setFormData((prev) => ({
+          ...prev,
+          foto: reader.result // Esta é a string Base64 da imagem
+        }));
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   // Função disparada ao enviar o formulário
@@ -54,17 +78,14 @@ export default function CadastroPage() {
         body: JSON.stringify(formData)
       });
 
-      // 1. Captura o conteúdo bruto da resposta como texto primeiro
       const textoResposta = await response.text();
 
-      // 2. Tenta converter para JSON apenas se a resposta não for um HTML
       let dados = {};
       try {
         dados = JSON.parse(textoResposta);
       } catch (parseError) {
-        // Se falhar o parse, significa que o Next.js enviou uma página de erro HTML (Ex: 404 ou 500)
         console.error("Resposta bruta do servidor (Não é um JSON válido):", textoResposta);
-        throw new Error(`O servidor retornou HTML em vez de JSON (Status HTTP ${response.status}). Abra o console (F12) para ver o erro.`);
+        throw new Error(`O servidor retornou HTML em vez de JSON (Status HTTP ${response.status}).`);
       }
 
       if (!response.ok) {
@@ -72,11 +93,8 @@ export default function CadastroPage() {
       }
 
       setSucesso("Conta criada com sucesso! Redirecionando...");
-      
-      // Limpa o formulário
-      setFormData({ nome: "", email: "", telefone: "", senha: "" });
+      setFormData({ nome: "", email: "", telefone: "", senha: "", foto: "" });
 
-      // Redireciona o usuário para a página de login após 2 segundos
       setTimeout(() => {
         router.push("/login");
       }, 2000);
@@ -132,6 +150,39 @@ export default function CadastroPage() {
 
           {/* Formulário */}
           <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+            
+            {/* Campo da Foto com Preview */}
+            <div className="flex flex-col items-center gap-3 mb-2">
+              <label className="text-xs font-semibold uppercase tracking-wider text-[#EDF0F5] self-start">Foto de Perfil:</label>
+              <div className="flex items-center gap-4 w-full">
+                <div className="relative h-14 w-14 overflow-hidden rounded-full border border-dashed flex items-center justify-center bg-[#10141D]" style={{ borderColor: "var(--border, #1E2430)" }}>
+                  {formData.foto ? (
+                    <img src={formData.foto} alt="Preview" className="h-full w-full object-cover" />
+                  ) : (
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#5C6478" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+                      <circle cx="12" cy="13" r="4"/>
+                    </svg>
+                  )}
+                </div>
+                <input 
+                  id="foto"
+                  name="foto"
+                  type="file" 
+                  accept="image/*"
+                  onChange={handleFileChange}
+                  className="hidden"
+                />
+                <label 
+                  htmlFor="foto"
+                  className="cursor-pointer rounded-xl border bg-[#10141D] px-4 py-2 text-xs font-medium text-[#EDF0F5] transition-colors hover:border-[#2E8BFF]"
+                  style={{ borderColor: "var(--border, #1E2430)" }}
+                >
+                  Selecionar imagem
+                </label>
+              </div>
+            </div>
+
             <div className="flex flex-col gap-1.5">
               <label htmlFor="nome" className="text-xs font-semibold uppercase tracking-wider text-[#EDF0F5]">Nome Completo:</label>
               <input 
@@ -182,34 +233,31 @@ export default function CadastroPage() {
                 id="senha"
                 name="senha"
                 type="password" 
-                required
-                value={formData.senha}
-                onChange={handleChange}
-                placeholder="••••••••" 
-                className="w-full rounded-xl border bg-[#10141D] px-4 py-3 text-sm text-[#EDF0F5] placeholder-[#5C6478] outline-none transition-all focus:border-[#2E8BFF]"
-                style={{ borderColor: "var(--border, #1E2430)" }}
-              />
-            </div>
+              value={formData.senha}
+              onChange={handleChange}
+              placeholder="••••••••"
+              className="w-full rounded-xl border bg-[#10141D] px-4 py-3 text-sm text-[#EDF0F5] placeholder-[#5C6478] outline-none transition-all focus:border-[#2E8BFF]"
+              style={{ borderColor: "var(--border, #1E2430)" }}
+            />
+          </div>
 
-            <button 
-              type="submit"
-              disabled={carregando}
-              className="mt-2 w-full rounded-xl py-3 text-sm font-semibold text-[#08090C] transition-all hover:opacity-90 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
-              style={{ background: "linear-gradient(90deg, #2E8BFF, #7C5CFF)" }}
-            >
-              {carregando ? "Criando conta..." : "Criar minha conta grátis"}
-            </button>
-          </form>
+          <button 
+            type="submit"
+            disabled={carregando}
+            className="mt-2 w-full rounded-xl py-3 text-sm font-semibold text-[#08090C] transition-all hover:opacity-90 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
+            style={{ background: "linear-gradient(90deg, #2E8BFF, #7C5CFF)" }}
+          >
+            {carregando ? "Criando conta..." : "Criar minha conta grátis"}
+          </button>
+        </form>
 
-          {/* Rodapé do Card */}
-          <p className="mt-8 text-center text-sm" style={{ color: "var(--muted, #8A93A6)" }}>
-            Já tem uma conta?{" "}
-            <Link href="/login" style={{ color: "var(--blue, #2E8BFF)" }} className="font-semibold hover:underline">
-              Fazer login
-            </Link>
-          </p>
-        </div>
+        {/* Rodapé do Card */}
+        <p className="mt-8 text-center text-sm" style={{ color: "var(--muted, #8A93A6)" }}>
+          Já tem uma conta?{" "}
+          <Link href="/login" style={{ color: "var(--blue, #2E8BFF)" }} className="font-semibold hover:underline">
+            Fazer login
+          </Link>
+        </p>
+
       </div>
-    </main>
-  );
-}
+    </div>
