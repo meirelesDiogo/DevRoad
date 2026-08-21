@@ -35,6 +35,6 @@
     "src/app/layout.jsx",
     "src/app/page.jsx",
     "src/app/api/auth/[...nextauth]/route.js"
-  ],
+, "next.config.mjs"  ],
   "exclude": ["node_modules"]
 }
