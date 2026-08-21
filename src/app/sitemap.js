@@ -5,8 +5,8 @@
  */
 
 export default async function sitemap() {
-  // ⚠️ Substitua pela URL principal/produção que a Vercel te deu
-  const baseUrl = "https://vercel.app";
+  // 🔄 VEJA AQUI: Troque o "vercel.app" genérico pela URL real do seu projeto!
+  const baseUrl = "https://dev-road-henna.vercel.app"; 
 
   // Páginas estáticas do seu projeto
   const rotasEstaticas = [
@@ -19,12 +19,12 @@ export default async function sitemap() {
     "/sobre",
   ].map((rota) => ({
     url: `${baseUrl}${rota}`,
-    lastModified: new Date().toISOString().split("T")[0], // Formato YYYY-MM-DD
+    lastModified: new Date().toISOString().split("T")[0], 
     changeFrequency: "daily",
-    priority: rota === "" ? 1.0 : 0.8, // Home tem prioridade máxima (1.0)
+    priority: rota === "" ? 1.0 : 0.8,
   }));
 
-  // Lista das linguagens atuais que criamos nos cards da Home
+  // Lista das linguagens atuais
   const linguagens = ["html", "css", "javascript", "python", "java", "php"];
   
   const rotasDeLinguagens = linguagens.map((lang) => ({
@@ -34,6 +34,5 @@ export default async function sitemap() {
     priority: 0.7,
   }));
 
-  // Junta todas as rotas em um único mapa final para o Google ler
   return [...rotasEstaticas, ...rotasDeLinguagens];
 }
