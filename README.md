@@ -20,9 +20,12 @@
 ![React](https://img.shields.io/badge/React-19-61DAFB?logo=react)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript)
 ![Node.js](https://img.shields.io/badge/Node.js-22-339933?logo=node.js)
+![NextAuth.js](https://img.shields.io/badge/NextAuth.js-v5-7C3AED?logo=auth0&logoColor=white)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-17-4169E1?logo=postgresql)
-![Prisma](https://img.shields.io/badge/Prisma-ORM-2D3748?logo=prisma)
+![Neon](https://img.shields.io/badge/Neon-Serverless_Postgres-00E599?logo=postgresql&logoColor=white)
+![Prisma](https://img.shields.io/badge/Prisma-ORM_v7-2D3748?logo=prisma)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4-06B6D4?logo=tailwindcss)
+![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker&logoColor=white)
 
 </p>
 
@@ -58,6 +61,7 @@ A proposta é oferecer um caminho de aprendizado claro, organizado e acessível 
 * 🚀 Evoluir continuamente junto com meus estudos.
 
 ---
+
 # 🛠️ Stack Tecnológica
 
 ## Front-end
@@ -72,34 +76,58 @@ A proposta é oferecer um caminho de aprendizado claro, organizado e acessível 
 ## Back-end
 
 * Node.js
-* Prisma ORM
+* Prisma ORM v7 (com Driver Adapter `@prisma/adapter-pg`)
+* NextAuth.js v5 (Auth.js) — autenticação por credenciais
+* bcryptjs — hashing de senhas
 * PostgreSQL 17
-* Docker
-* Docker Compose
+* Docker / Docker Compose
 
 ## Banco de Dados
 
-* PostgreSQL
+* PostgreSQL 17
+* Neon (Postgres serverless — ambiente de produção)
 * Prisma Migrations
 * Prisma Client
 
 ## Ferramentas
 
-* Git
-* GitHub
+* Git / GitHub
 * Vercel
 * Docker Desktop
 * Figma
 * VS Code
 
+---
 
-## Banco de Dados
+# 🔒 Segurança e Cadastro de Usuários
 
-* PostgreSQL 17
-* Prisma ORM
-* Prisma Migrations
-* Prisma Client
-* Docker Compose
+* **Criptografia de senhas**: todas as senhas passam por hashing com `bcryptjs` (10 salt rounds) antes de serem persistidas no banco — a senha em texto puro nunca é armazenada.
+* **Foto de perfil em Base64**: upload de imagem convertido em Base64 em tempo real, com preview circular instantâneo, sem depender de serviços externos de armazenamento de imagem.
+* **Proteção contra estouro de caracteres**: validação e truncamento (`substring`) de campos de texto no back-end, prevenindo erros como o `P2000` do Prisma ao inserir valores maiores que o limite da coluna.
+
+---
+
+# 🔑 Autenticação e Gestão de Sessões (NextAuth.js v5)
+
+* **Login por credenciais**: formulário integrado ao banco de dados — o e-mail é buscado no Postgres (Neon) e a senha validada com `bcrypt.compare`.
+* **Sessões leves**: dados pesados (como a foto do usuário) foram removidos do cookie de sessão, evitando o erro `494` (header muito grande) e mantendo a autenticação estável em produção na Vercel.
+* **Rota de avatar dedicada** (`/api/user/avatar`): endpoint que busca a imagem do usuário logado sob demanda direto no banco, permitindo que o `<Header />` exiba o avatar (ou a inicial do nome) sem sobrecarregar o cookie.
+* **Proteção de rotas com Middleware**: `middleware.js` compatível com o Edge Runtime da Vercel, impedindo que um usuário autenticado retorne às telas de login/cadastro pelo histórico do navegador.
+
+---
+
+# 🗄️ Banco de Dados e Infraestrutura
+
+* **Rede interna no Docker**: ajuste no `docker-compose.yml` e no `.env`, trocando `BD_HOST=localhost` por `postgres` (nome do serviço), permitindo a comunicação correta entre os containers locais.
+* **Banco de produção na nuvem (Neon)**: estrutura completa de tabelas (`User`, `Tecnologias`, `Modulos`, `Aulas`, `Progresso`, `Favoritos`) provisionada no PostgreSQL 17 gratuito da [Neon.tech](https://neon.tech).
+* **Prisma v7 + Driver Adapter**: uso do `@prisma/adapter-pg` com o driver `pg` nativo, garantindo compatibilidade total com ambientes serverless (Vercel Functions).
+
+---
+
+# 🌐 SEO e Indexação
+
+* **Sitemap dinâmico** (`sitemap.js`): geração automática das rotas públicas (Home, páginas de autenticação e trilhas de tecnologias), validado no Google Search Console.
+* **Políticas de rastreamento** (`robots.js`): liberação total de indexação para o Google, com bloqueio específico das rotas internas de API.
 
 ---
 
@@ -113,85 +141,118 @@ Antes de iniciar o projeto, tenha instalado:
 * Docker Desktop
 * Git
 
----
-
 ## Instalação
 
 Clone o repositório:
 
 ```bash
 git clone https://github.com/MeirelesDiogo/DevRoad.git
+```
+
 Entre na pasta do projeto:
 
+```bash
 cd DevRoad
+```
 
 Instale as dependências:
 
+```bash
 npm install
-Banco de Dados
+```
 
-O DevRoad utiliza PostgreSQL executado através de um container Docker.
+## Banco de Dados
 
-Para iniciar o banco de dados:
+O DevRoad utiliza PostgreSQL executado através de um container Docker em ambiente local, e Neon (Postgres serverless) em produção.
 
+Para iniciar o banco de dados local:
+
+```bash
 docker compose up -d
+```
 
-O PostgreSQL ficará disponível em:
+O PostgreSQL local ficará disponível em:
 
+```
 localhost:5432
-Configuração das Variáveis de Ambiente
+```
 
-Crie um arquivo .env na raiz do projeto:
+## Configuração das Variáveis de Ambiente
 
+Crie um arquivo `.env` na raiz do projeto:
+
+```env
+# Banco de dados
 BD_USER=postgres
 BD_PASSWORD=postgres
 BD_PORT=5432
-BD_HOST=localhost
+BD_HOST=postgres
 BD_NAME=DevRoad
-Prisma ORM
 
-O projeto utiliza Prisma como ORM para comunicação com o banco de dados.
+# NextAuth.js
+AUTH_SECRET=sua_chave_secreta
+```
+
+> Em ambiente Docker, `BD_HOST` deve ser o nome do serviço (`postgres`) definido no `docker-compose.yml`, não `localhost`.
+
+## Prisma ORM
+
+O projeto utiliza o Prisma como ORM para comunicação com o banco de dados, com Driver Adapter (`@prisma/adapter-pg`) para total compatibilidade com ambientes serverless.
 
 Principais recursos utilizados:
 
-Modelagem do banco através do Prisma Schema
-Controle de migrations
-Geração do Prisma Client
-Integração com PostgreSQL
+* Modelagem do banco através do Prisma Schema
+* Controle de migrations
+* Geração do Prisma Client
+* Integração com PostgreSQL (local via Docker e produção via Neon)
 
 Executar migrations:
 
+```bash
 npx prisma migrate dev
+```
 
 Gerar Prisma Client:
 
+```bash
 npx prisma generate
+```
 
 Abrir o Prisma Studio:
 
+```bash
 npx prisma studio
-🏗️ Arquitetura Atual
+```
 
-O DevRoad utiliza uma arquitetura baseada em:
+---
 
+# 🏗️ Arquitetura Atual
+
+```
 Next.js 15
-      │
-      ├── React 19
-      │
-      ├── TypeScript
-      │
-      ├── Prisma ORM
-      │
-      └── PostgreSQL
-              │
-              └── Docker Container
-# 📌 Funcionalidades Planejadas
+  │
+  ├── React 19
+  ├── TypeScript
+  ├── NextAuth.js v5 (Autenticação + Middleware)
+  ├── bcryptjs (Hash de senhas)
+  ├── Prisma ORM v7 (+ @prisma/adapter-pg)
+  │
+  └── PostgreSQL 17
+        ├── Docker Container (ambiente local)
+        └── Neon (ambiente de produção)
+```
+
+---
+
+# 📌 Funcionalidades
 
 ### Plataforma
 
-* [ ] Sistema de autenticação
-* [ ] Cadastro de usuários
-* [ ] Login
+* [x] Cadastro de usuários (com hash de senha e foto em Base64)
+* [x] Login por credenciais (NextAuth.js v5)
+* [x] Proteção de rotas autenticadas via Middleware
+* [x] Rota dedicada de avatar do usuário
+* [ ] Login social (OAuth)
 * [ ] Perfil do usuário
 * [ ] Configurações
 
@@ -238,32 +299,39 @@ Next.js 15
 
 ## Front-end
 
-* [ ] Estrutura inicial
+* [x] Estrutura inicial
+* [x] Login
+* [x] Cadastro
 * [ ] Página Inicial
 * [ ] Página das Tecnologias
 * [ ] Página da Tecnologia
 * [ ] Página das Aulas
-* [ ] Login
-* [ ] Cadastro
 * [ ] Perfil
 
 ## Back-end
 
-* [ ] API REST
-* [ ] Banco de Dados
-* [ ] PostgreSQL
-* [ ] Prisma ORM
-* [ ] Autenticação JWT
+* [x] Banco de Dados (PostgreSQL + Neon)
+* [x] Prisma ORM (v7 + Driver Adapter)
+* [x] Autenticação (NextAuth.js v5 + bcryptjs)
+* [x] Proteção de rotas (Middleware)
+* [ ] API REST completa (aulas, trilhas, progresso)
 * [ ] Sistema de progresso
+
+## SEO
+
+* [x] Sitemap dinâmico
+* [x] Robots.txt configurado
+* [ ] Metadados otimizados por página
+* [ ] Open Graph / compartilhamento social
 
 ## Deploy
 
-* [ ] Deploy Front-end
-* [ ] Deploy API
-* [ ] Banco em produção
+* [x] Deploy Front-end (Vercel)
+* [x] Banco em produção (Neon)
 * [ ] Lançamento da versão 1.0
 
 ---
+
 ## 📂 Estrutura de Páginas
 
 Abaixo está a estrutura inicial planejada para as rotas do DevRoad. Ela poderá evoluir conforme novas funcionalidades forem adicionadas ao projeto.
@@ -275,6 +343,8 @@ src/
     ├── page.tsx                      # Home
     ├── layout.tsx                    # Layout global
     ├── globals.css                   # Estilos globais
+    ├── sitemap.js                    # Sitemap dinâmico
+    ├── robots.js                     # Políticas de indexação
     │
     ├── login/
     │   └── page.tsx
@@ -309,29 +379,37 @@ src/
     ├── contato/
     │   └── page.tsx
     │
+    ├── api/
+    │   └── user/
+    │       └── avatar/
+    │           └── route.ts          # Rota dedicada de avatar
+    │
+    ├── middleware.js                 # Proteção de rotas autenticadas
+    │
     └── not-found.tsx
 ```
 
 ### 📄 Páginas Planejadas
 
 | Página                  | Descrição                                            |
-| ----------------------- | ---------------------------------------------------- |
-| `/`                     | Página inicial da plataforma.                        |
-| `/login`                | Login do usuário.                                    |
-| `/cadastro`             | Cadastro de novos usuários.                          |
-| `/tecnologias`          | Catálogo de tecnologias disponíveis.                 |
-| `/tecnologias/[slug]`   | Informações e trilha de uma tecnologia específica.   |
-| `/roadmaps`             | Lista de todos os roadmaps disponíveis.              |
-| `/roadmaps/[slug]`      | Roadmap completo de uma tecnologia.                  |
-| `/aulas/[id]`           | Página da aula com vídeo, documentação e exercícios. |
-| `/perfil`               | Perfil do usuário.                                   |
-| `/perfil/configuracoes` | Configurações da conta.                              |
-| `/perfil/favoritos`     | Tecnologias e aulas favoritas.                       |
-| `/sobre`                | Informações sobre o projeto DevRoad.                 |
-| `/contato`              | Contato e formas de contribuição.                    |
-| `404`                   | Página personalizada para rotas inexistentes.        |
+| ------------------------ | ----------------------------------------------------- |
+| `/`                      | Página inicial da plataforma.                          |
+| `/login`                 | Login do usuário.                                       |
+| `/cadastro`              | Cadastro de novos usuários.                             |
+| `/tecnologias`           | Catálogo de tecnologias disponíveis.                    |
+| `/tecnologias/[slug]`    | Informações e trilha de uma tecnologia específica.      |
+| `/roadmaps`              | Lista de todos os roadmaps disponíveis.                 |
+| `/roadmaps/[slug]`       | Roadmap completo de uma tecnologia.                     |
+| `/aulas/[id]`            | Página da aula com vídeo, documentação e exercícios.    |
+| `/perfil`                | Perfil do usuário.                                      |
+| `/perfil/configuracoes`  | Configurações da conta.                                 |
+| `/perfil/favoritos`      | Tecnologias e aulas favoritas.                          |
+| `/sobre`                 | Informações sobre o projeto DevRoad.                    |
+| `/contato`               | Contato e formas de contribuição.                       |
+| `/api/user/avatar`       | Endpoint que retorna o avatar do usuário autenticado.   |
+| `404`                    | Página personalizada para rotas inexistentes.           |
 
-> **Observação:** Esta estrutura representa o planejamento inicial do projeto e poderá sofrer alterações conforme o desenvolvimento e a evolução do DevRoad.
+> **Observação:** Esta estrutura representa o planejamento do projeto e poderá sofrer alterações conforme o desenvolvimento e a evolução do DevRoad.
 
 ---
 
@@ -376,7 +454,7 @@ Este projeto será distribuído sob a licença **MIT**.
 
 **Diogo Alexandre Meireles**
 
-GitHub: **https://github.com/MeirelesDiogo**
+GitHub: [MeirelesDiogo](https://github.com/MeirelesDiogo)
 
 ---
 
