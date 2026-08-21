@@ -1,7 +1,11 @@
 # 🚀 DevRoad
 
 <p align="center">
-  <img src="./public/logo.png" alt="DevRoad Logo" width="180">
+  <img src="https://capsule-render.vercel.app/api?type=waving&color=0:0D1117,50:00E599,100:4169E1&height=200&section=header&text=DevRoad&fontSize=55&fontColor=ffffff&animation=fadeIn&fontAlignY=35&desc=Aprenda.%20Pratique.%20Evolua.&descAlignY=55&descSize=18" width="100%">
+</p>
+
+<p align="center">
+  <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&size=18&duration=3000&pause=800&color=00E599&center=true&vCenter=true&width=560&lines=Trilhas+de+aprendizado+estruturadas;Next.js+%2B+Prisma+%2B+PostgreSQL;Open+Source+%E2%80%A2+Em+constante+evolu%C3%A7%C3%A3o" alt="Typing SVG" />
 </p>
 
 <p align="center">
@@ -478,4 +482,8 @@ Mais do que um projeto de portfólio, o DevRoad representa uma evolução consta
 
 <p align="center">
   <strong>🚀 Aprenda. Pratique. Evolua.</strong>
+</p>
+
+<p align="center">
+  <img src="https://capsule-render.vercel.app/api?type=waving&color=0:4169E1,50:00E599,100:0D1117&height=120&section=footer" width="100%">
 </p>
