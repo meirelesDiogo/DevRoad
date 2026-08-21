@@ -2,17 +2,12 @@ import { NextResponse } from "next/server";
 import pg from "pg";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "@prisma/client";
-// 🔄 Importa a biblioteca de criptografia
 import bcrypt from "bcryptjs";
 
 const pool = new pg.Pool({ connectionString: process.env.DATABASE_URL });
 const adapter = new PrismaPg(pool);
 const prisma = new PrismaClient({ adapter });
 
-/**
- * GET /api/users
- * Lista todos os usuários cadastrados
- */
 export async function GET() {
   try {
     const usuarios = await prisma.user.findMany({
@@ -28,21 +23,12 @@ export async function GET() {
         criadoEm: "desc",
       },
     });
-
     return NextResponse.json(usuarios, { status: 200 });
   } catch (error) {
-    console.error("Erro ao buscar usuários:", error);
-    return NextResponse.json(
-      { error: "Erro interno do servidor ao buscar usuários" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Erro ao buscar usuários" }, { status: 500 });
   }
 }
 
-/**
- * POST /api/users
- * Cria um novo usuário criptografando a senha de forma segura
- */
 export async function POST(request) {
   try {
     const body = await request.json();
@@ -55,31 +41,35 @@ export async function POST(request) {
       );
     }
 
-    // 🔒 Gera o Salt e criptografa a senha informada
+    // 🔒 Proteção: Garante que os tamanhos respeitem os limites do VARCHAR do seu Schema
+    const nomeTratado = nome.substring(0, 100);
+    const emailTratado = email.substring(0, 150);
+    const telefoneTratado = telefone ? telefone.substring(0, 20) : null;
+
+    // Criptografia da senha
     const salt = await bcrypt.genSalt(10);
     const senhaCriptografada = await bcrypt.hash(senha, salt);
 
     const novoUsuario = await prisma.user.create({
       data: {
-        nome,
-        email,
-        telefone: telefone || null,
-        senha: senhaCriptografada, // 🔄 Salva a senha protegida no banco
-        foto: foto || null,
+        nome: nomeTratado,
+        email: emailTratado,
+        telefone: telefoneTratado,
+        senha: senhaCriptografada.substring(0, 255),
+        foto: foto || null, // Já alterado para TEXT na Neon, aceita qualquer tamanho
       },
       select: {
         id: true,
         nome: true,
         email: true,
-        telefone: true,
-        foto: true,
-        criadoEm: true,
       },
     });
 
     return NextResponse.json(novoUsuario, { status: 201 });
   } catch (error) {
-    console.error("Erro ao criar usuário:", error);
+    // 🔍 LOG ULTRA DETALHADO: Exibe exatamente o erro no painel da Vercel
+    console.error("ERRO COMPLETO DO PRISMA NO CADASTRO:", JSON.stringify(error, null, 2));
+    console.error("Mensagem do erro:", error.message);
 
     if (error.code === "P2002") {
       return NextResponse.json(
@@ -88,8 +78,9 @@ export async function POST(request) {
       );
     }
 
+    // Retorna mais detalhes do erro na resposta HTTP para facilitar o seu diagnóstico na tela
     return NextResponse.json(
-      { error: "Erro interno do servidor ao registrar usuário." },
+      { error: `Erro interno do banco de dados: ${error.message || "LengthMismatch ou restrição de campo"}` },
       { status: 500 }
     );
   }
