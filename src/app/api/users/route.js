@@ -1,8 +1,9 @@
 import { NextResponse } from "next/server";
 import pg from "pg";
 import { PrismaPg } from "@prisma/adapter-pg";
-// 🔄 Mude deste import relativo para o import global abaixo:
-import { PrismaClient } from "@prisma/client"; 
+import { PrismaClient } from "@prisma/client";
+// 🔄 Importa a biblioteca de criptografia
+import bcrypt from "bcryptjs";
 
 const pool = new pg.Pool({ connectionString: process.env.DATABASE_URL });
 const adapter = new PrismaPg(pool);
@@ -40,7 +41,7 @@ export async function GET() {
 
 /**
  * POST /api/users
- * Cria um novo usuário no banco de dados do DevRoad
+ * Cria um novo usuário criptografando a senha de forma segura
  */
 export async function POST(request) {
   try {
@@ -54,12 +55,16 @@ export async function POST(request) {
       );
     }
 
+    // 🔒 Gera o Salt e criptografa a senha informada
+    const salt = await bcrypt.genSalt(10);
+    const senhaCriptografada = await bcrypt.hash(senha, salt);
+
     const novoUsuario = await prisma.user.create({
       data: {
         nome,
         email,
         telefone: telefone || null,
-        senha, 
+        senha: senhaCriptografada, // 🔄 Salva a senha protegida no banco
         foto: foto || null,
       },
       select: {
