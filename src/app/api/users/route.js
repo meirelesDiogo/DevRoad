@@ -1,16 +1,11 @@
 import { NextResponse } from "next/server";
 import pg from "pg";
 import { PrismaPg } from "@prisma/adapter-pg";
-// Importa o Prisma a partir do local customizado definido no seu schema.prisma
-import { PrismaClient } from "../../../generated/prisma";
+// 🔄 Mude deste import relativo para o import global abaixo:
+import { PrismaClient } from "@prisma/client"; 
 
-// Configura o Pool de conexões do PostgreSQL nativo usando a variável de ambiente do Docker
 const pool = new pg.Pool({ connectionString: process.env.DATABASE_URL });
-
-// Cria o adaptador exigido obrigatoriamente a partir do Prisma v7
 const adapter = new PrismaPg(pool);
-
-// Instancia o cliente injetando o Driver Adapter configurado
 const prisma = new PrismaClient({ adapter });
 
 /**
