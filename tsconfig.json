@@ -28,7 +28,13 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts",
-    "**/*.mts"
-, "src/app/cadastro/page.jsx", "src/app/login/page.jsx", "src/app/not-found.jsx", "src/app/layout.jsx", "src/app/page.jsx"  ],
+    "**/*.mts",
+    "src/app/cadastro/page.jsx",
+    "src/app/login/page.jsx",
+    "src/app/not-found.jsx",
+    "src/app/layout.jsx",
+    "src/app/page.jsx",
+    "src/app/api/auth/[...nextauth]/route.js"
+  ],
   "exclude": ["node_modules"]
 }
