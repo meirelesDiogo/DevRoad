@@ -1,11 +1,7 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
 generator client {
   provider = "prisma-client-js"
-
 }
+
 datasource db {
   provider = "postgresql"
 }
@@ -39,85 +35,86 @@ model Tecnologias {
 }
 
 model Modulo {
-  id              Int      @id @default(autoincrement()) @map("id_modulo")
+  id           Int          @id @default(autoincrement()) @map("id_modulo")
+  tecnologiaId Int          @map("id_tecnologia")
+  titulo       String       @db.VarChar(150)
+  descricao    String?
+  ordem        Int
 
-  tecnologiaId    Int      @map("id_tecnologia")
+  tecnologia   Tecnologias  @relation(
+    fields: [tecnologiaId],
+    references: [id],
+    onDelete: Cascade
+  )
 
-  titulo          String   @db.VarChar(150)
-
-  descricao       String?
-
-  ordem           Int
-
-  tecnologia      Tecnologias @relation(fields: [tecnologiaId], references: [id], onDelete: Cascade)
-
-  aulas           Aula[]
+  aulas        Aula[]
 
   @@map("Modulos")
 }
 
 model Aula {
-  id                  Int      @id @default(autoincrement()) @map("id_aula")
+  id              Int       @id @default(autoincrement()) @map("id_aula")
+  moduloId        Int       @map("id_modulo")
+  titulo          String    @db.VarChar(150)
+  descricao       String?
+  youtubeUrl      String?   @map("youtube_url") @db.VarChar(500)
+  documentacaoUrl String?   @map("documentacao_url") @db.VarChar(500)
+  projeto         String?
+  exercicio       String?
+  ordem           Int
+  tempoEstimado   Int?      @map("tempo_estimado")
 
-  moduloId            Int      @map("id_modulo")
+  modulo          Modulo    @relation(
+    fields: [moduloId],
+    references: [id],
+    onDelete: Cascade
+  )
 
-  titulo              String   @db.VarChar(150)
-
-  descricao           String?
-
-  youtubeUrl          String? @map("youtube_url") @db.VarChar(500)
-
-  documentacaoUrl     String? @map("documentacao_url") @db.VarChar(500)
-
-  projeto             String?
-
-  exercicio           String?
-
-  ordem               Int
-
-  tempoEstimado       Int? @map("tempo_estimado")
-
-  modulo              Modulo @relation(fields: [moduloId], references: [id], onDelete: Cascade)
-
-  progresso           Progresso[]
+  progresso       Progresso[]
 
   @@map("Aulas")
 }
 
 model Progresso {
+  id             Int       @id @default(autoincrement()) @map("id_progresso")
+  userId         Int       @map("id_user")
+  aulaId         Int       @map("id_aula")
+  concluido      Boolean   @default(false)
+  dataConclusao  DateTime? @map("data_conclusao")
 
-  id                Int @id @default(autoincrement()) @map("id_progresso")
+  user           User      @relation(
+    fields: [userId],
+    references: [id],
+    onDelete: Cascade
+  )
 
-  userId            Int @map("id_user")
-
-  aulaId            Int @map("id_aula")
-
-  concluido         Boolean @default(false)
-
-  dataConclusao     DateTime? @map("data_conclusao")
-
-  user              User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  aula              Aula @relation(fields: [aulaId], references: [id], onDelete: Cascade)
+  aula           Aula      @relation(
+    fields: [aulaId],
+    references: [id],
+    onDelete: Cascade
+  )
 
   @@unique([userId, aulaId])
-
   @@map("Progresso")
 }
 
 model Favoritos {
+  id           Int          @id @default(autoincrement()) @map("id_favorito")
+  userId       Int          @map("id_user")
+  tecnologiaId Int          @map("id_tecnologia")
 
-  id                Int @id @default(autoincrement()) @map("id_favorito")
+  user         User         @relation(
+    fields: [userId],
+    references: [id],
+    onDelete: Cascade
+  )
 
-  userId            Int @map("id_user")
-
-  tecnologiaId      Int @map("id_tecnologia")
-
-  user              User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  tecnologia        Tecnologias @relation(fields: [tecnologiaId], references: [id], onDelete: Cascade)
+  tecnologia   Tecnologias  @relation(
+    fields: [tecnologiaId],
+    references: [id],
+    onDelete: Cascade
+  )
 
   @@unique([userId, tecnologiaId])
-
   @@map("Favoritos")
 }
