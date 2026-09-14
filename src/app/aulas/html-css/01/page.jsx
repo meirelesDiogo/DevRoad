@@ -5,6 +5,8 @@ import { prisma } from "@/lib/prisma";
 
 export const metadata = {
   title: "Aula 01 — Fundamentos da Web | DevRoad",
+  description:
+    "Aprenda os fundamentos da Web e conheça a estrutura básica de uma página HTML.",
 };
 
 function extrairVideoId(url) {
@@ -13,11 +15,16 @@ function extrairVideoId(url) {
   try {
     const parsedUrl = new URL(url);
 
-    if (parsedUrl.hostname.includes("youtu.be")) {
+    // https://youtu.be/VIDEO_ID
+    if (parsedUrl.hostname === "youtu.be") {
       return parsedUrl.pathname.replace("/", "");
     }
 
-    if (parsedUrl.hostname.includes("youtube.com")) {
+    // https://www.youtube.com/watch?v=VIDEO_ID
+    if (
+      parsedUrl.hostname.includes("youtube.com") &&
+      parsedUrl.searchParams.get("v")
+    ) {
       return parsedUrl.searchParams.get("v");
     }
 
@@ -28,63 +35,147 @@ function extrairVideoId(url) {
 }
 
 export default async function Aula01Page() {
+  // =========================================================
+  // 1. VERIFICAR AUTENTICAÇÃO
+  // =========================================================
+
   const session = await auth();
 
   if (!session?.user) {
     return (
-      <main
-        style={{
-          minHeight: "100vh",
-          display: "grid",
-          placeItems: "center",
-          padding: "24px",
-          background: "#0A0D14",
-          color: "#EDF0F5",
-          fontFamily: "Inter, sans-serif",
-        }}
-      >
-        <div
-          style={{
-            maxWidth: "500px",
-            textAlign: "center",
-            padding: "40px",
-            background: "#10141D",
-            border: "1px solid #1E2430",
-            borderRadius: "16px",
-          }}
-        >
-          <h1 style={{ marginBottom: "12px" }}>
-            Faça login para acessar esta aula
-          </h1>
+      <main className="lesson-page">
+        <section className="login-required">
+          <div className="login-card">
+            <div className="login-icon">🔒</div>
 
-          <p style={{ color: "#8A93A6", marginBottom: "24px" }}>
-            Entre na sua conta do DevRoad para acompanhar seu progresso.
-          </p>
+            <h1>Faça login para acessar esta aula</h1>
 
-          <Link
-            href="/login"
-            style={{
-              display: "inline-block",
-              padding: "12px 20px",
-              borderRadius: "8px",
-              background: "#2E8BFF",
-              color: "#fff",
-              textDecoration: "none",
-              fontWeight: 600,
-            }}
-          >
-            Entrar
-          </Link>
-        </div>
+            <p>
+              Para aprender no DevRoad, você precisa estar conectado à sua
+              conta.
+            </p>
+
+            <div className="login-actions">
+              <Link href="/login" className="primary-button">
+                Entrar
+              </Link>
+
+              <Link href="/cadastro" className="secondary-button">
+                Criar conta
+              </Link>
+            </div>
+          </div>
+        </section>
+
+        <style>{`
+          .lesson-page {
+            min-height: 100vh;
+            background: #0A0D14;
+            color: #EDF0F5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+          }
+
+          .login-required {
+            width: 100%;
+            max-width: 520px;
+          }
+
+          .login-card {
+            background: #10141D;
+            border: 1px solid #1E2430;
+            border-radius: 20px;
+            padding: 48px 32px;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+          }
+
+          .login-icon {
+            width: 64px;
+            height: 64px;
+            margin: 0 auto 24px;
+            border-radius: 16px;
+            background: rgba(46, 139, 255, 0.1);
+            border: 1px solid rgba(46, 139, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+          }
+
+          .login-card h1 {
+            margin: 0 0 14px;
+            font-size: 28px;
+            line-height: 1.2;
+          }
+
+          .login-card p {
+            margin: 0 auto;
+            max-width: 400px;
+            color: #8A93A6;
+            line-height: 1.7;
+          }
+
+          .login-actions {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+          }
+
+          .primary-button,
+          .secondary-button {
+            text-decoration: none;
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-weight: 600;
+            transition: 0.2s ease;
+          }
+
+          .primary-button {
+            background: #2E8BFF;
+            color: white;
+          }
+
+          .primary-button:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+          }
+
+          .secondary-button {
+            background: #181D27;
+            color: #EDF0F5;
+            border: 1px solid #1E2430;
+          }
+
+          .secondary-button:hover {
+            border-color: #2E8BFF;
+          }
+        `}</style>
       </main>
     );
   }
 
+  // =========================================================
+  // 2. BUSCAR AULA
+  // =========================================================
+
   const aula = await prisma.aula.findFirst({
     where: {
-      moduloId: 1,
       ordem: 1,
+
+      modulo: {
+        ordem: 1,
+
+        tecnologia: {
+          nome: "HTML & CSS",
+        },
+      },
     },
+
     include: {
       modulo: {
         include: {
@@ -94,507 +185,771 @@ export default async function Aula01Page() {
     },
   });
 
+  // =========================================================
+  // 3. SE NÃO EXISTIR, MOSTRAR NOT FOUND
+  // =========================================================
+
   if (!aula) {
     notFound();
   }
 
+  // =========================================================
+  // 4. EXTRAIR ID DO YOUTUBE
+  // =========================================================
+
   const videoId = extrairVideoId(aula.youtubeUrl);
 
+  // =========================================================
+  // 5. RENDERIZAR AULA
+  // =========================================================
+
   return (
-    <main
-      style={{
-        minHeight: "100vh",
-        background: "#0A0D14",
-        color: "#EDF0F5",
-        fontFamily: "Inter, sans-serif",
-        paddingBottom: "60px",
-      }}
-    >
-      {/* HEADER */}
-      <header
-        style={{
-          borderBottom: "1px solid #1E2430",
-          background: "#0A0D14",
-        }}
-      >
-        <div
-          style={{
-            maxWidth: "1200px",
-            margin: "0 auto",
-            padding: "18px 24px",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            gap: "20px",
-          }}
-        >
-          <Link
-            href="/"
-            style={{
-              color: "#EDF0F5",
-              textDecoration: "none",
-              fontSize: "22px",
-              fontWeight: 700,
-            }}
-          >
-            Dev<span style={{ color: "#2E8BFF" }}>Road</span>
-          </Link>
+    <main className="lesson-page">
+      <div className="lesson-container">
 
-          <Link
-            href="/roadmaps/html-css"
-            style={{
-              color: "#8A93A6",
-              textDecoration: "none",
-              fontSize: "14px",
-            }}
-          >
-            Voltar para o roadmap
-          </Link>
-        </div>
-      </header>
+        {/* =====================================================
+            BREADCRUMB
+        ====================================================== */}
 
-      {/* CONTEÚDO */}
-      <div
-        style={{
-          maxWidth: "1200px",
-          margin: "0 auto",
-          padding: "32px 24px",
-        }}
-      >
-        {/* BREADCRUMB */}
-        <div
-          style={{
-            display: "flex",
-            flexWrap: "wrap",
-            gap: "8px",
-            alignItems: "center",
-            marginBottom: "24px",
-            color: "#8A93A6",
-            fontSize: "14px",
-          }}
-        >
-          <Link
-            href="/roadmaps"
-            style={{ color: "#8A93A6", textDecoration: "none" }}
-          >
-            Roadmaps
-          </Link>
+        <nav className="breadcrumb">
+          <Link href="/">DevRoad</Link>
 
           <span>/</span>
 
-          <Link
-            href="/roadmaps/html-css"
-            style={{ color: "#8A93A6", textDecoration: "none" }}
-          >
-            HTML & CSS
-          </Link>
+          <Link href="/roadmaps">Roadmaps</Link>
 
           <span>/</span>
 
-          <span style={{ color: "#EDF0F5" }}>{aula.titulo}</span>
-        </div>
+          <span>{aula.modulo.tecnologia.nome}</span>
 
-        {/* TÍTULO */}
-        <section style={{ marginBottom: "32px" }}>
-          <span
-            style={{
-              display: "inline-block",
-              marginBottom: "12px",
-              padding: "6px 10px",
-              borderRadius: "6px",
-              background: "rgba(46, 139, 255, 0.1)",
-              color: "#2E8BFF",
-              fontSize: "12px",
-              fontWeight: 700,
-            }}
-          >
-            AULA {String(aula.ordem).padStart(2, "0")}
-          </span>
+          <span>/</span>
 
-          <h1
-            style={{
-              margin: 0,
-              fontSize: "clamp(30px, 5vw, 48px)",
-              lineHeight: 1.1,
-              letterSpacing: "-1px",
-            }}
-          >
-            {aula.titulo}
-          </h1>
+          <span>{aula.modulo.titulo}</span>
+
+          <span>/</span>
+
+          <strong>Aula {aula.ordem}</strong>
+        </nav>
+
+        {/* =====================================================
+            CABEÇALHO
+        ====================================================== */}
+
+        <header className="lesson-header">
+
+          <div className="lesson-label">
+            <span className="lesson-number">
+              AULA {String(aula.ordem).padStart(2, "0")}
+            </span>
+
+            <span className="lesson-tech">
+              {aula.modulo.tecnologia.nome}
+            </span>
+          </div>
+
+          <h1>{aula.titulo}</h1>
 
           {aula.descricao && (
-            <p
-              style={{
-                maxWidth: "760px",
-                marginTop: "16px",
-                color: "#8A93A6",
-                fontSize: "17px",
-                lineHeight: 1.7,
-              }}
-            >
+            <p className="lesson-description">
               {aula.descricao}
             </p>
           )}
-        </section>
 
-        {/* GRID PRINCIPAL */}
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "minmax(0, 1fr) 300px",
-            gap: "24px",
-          }}
-        >
-          <div>
-            {/* VÍDEO */}
-            <section
-              style={{
-                overflow: "hidden",
-                background: "#10141D",
-                border: "1px solid #1E2430",
-                borderRadius: "16px",
-              }}
-            >
-              <div
-                style={{
-                  position: "relative",
-                  width: "100%",
-                  aspectRatio: "16 / 9",
-                  background: "#000",
-                }}
-              >
-                {videoId ? (
-                  <iframe
-                    src={`https://www.youtube.com/embed/${videoId}`}
-                    title={aula.titulo}
-                    style={{
-                      position: "absolute",
-                      inset: 0,
-                      width: "100%",
-                      height: "100%",
-                      border: 0,
-                    }}
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                    allowFullScreen
-                  />
-                ) : (
-                  <div
-                    style={{
-                      height: "100%",
-                      display: "grid",
-                      placeItems: "center",
-                      padding: "20px",
-                      color: "#8A93A6",
-                      textAlign: "center",
-                    }}
-                  >
-                    Vídeo desta aula ainda não disponível.
+          <div className="lesson-meta">
+
+            {aula.tempoEstimado && (
+              <span>
+                ⏱️ {aula.tempoEstimado} minutos
+              </span>
+            )}
+
+            <span>
+              📚 {aula.modulo.titulo}
+            </span>
+
+          </div>
+        </header>
+
+        {/* =====================================================
+            CONTEÚDO PRINCIPAL
+        ====================================================== */}
+
+        <div className="lesson-grid">
+
+          <section className="lesson-main">
+
+            {/* =================================================
+                VÍDEO
+            ================================================== */}
+
+            {videoId ? (
+              <div className="video-wrapper">
+                <iframe
+                  src={`https://www.youtube.com/embed/${videoId}`}
+                  title={aula.titulo}
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  allowFullScreen
+                />
+              </div>
+            ) : (
+              <div className="video-unavailable">
+                <span>🎥</span>
+
+                <p>
+                  O vídeo desta aula ainda não está disponível.
+                </p>
+              </div>
+            )}
+
+            {/* =================================================
+                RESUMO
+            ================================================== */}
+
+            <section className="content-card">
+
+              <div className="card-header">
+                <span className="card-icon">📖</span>
+
+                <div>
+                  <h2>Resumo da aula</h2>
+
+                  <p>
+                    Principais conceitos apresentados nesta aula.
+                  </p>
+                </div>
+              </div>
+
+              <div className="summary-content">
+
+                <p>
+                  Nesta aula você conhecerá os fundamentos do
+                  desenvolvimento para a Web e entenderá como uma
+                  página HTML é estruturada.
+                </p>
+
+                <p>
+                  Você também aprenderá os primeiros conceitos
+                  necessários para começar a construir páginas
+                  utilizando HTML.
+                </p>
+
+              </div>
+            </section>
+
+            {/* =================================================
+                EXERCÍCIO
+            ================================================== */}
+
+            {aula.exercicio && (
+              <section className="content-card exercise-card">
+
+                <div className="card-header">
+                  <span className="card-icon">🧠</span>
+
+                  <div>
+                    <h2>Exercício</h2>
+
+                    <p>
+                      Pratique o que você aprendeu.
+                    </p>
                   </div>
-                )}
-              </div>
-
-              <div style={{ padding: "20px" }}>
-                <div
-                  style={{
-                    display: "flex",
-                    flexWrap: "wrap",
-                    gap: "16px",
-                    color: "#8A93A6",
-                    fontSize: "13px",
-                  }}
-                >
-                  <span>
-                    📚 {aula.modulo?.titulo || "Módulo"}
-                  </span>
-
-                  {aula.tempoEstimado && (
-                    <span>⏱️ {aula.tempoEstimado} min</span>
-                  )}
-                </div>
-              </div>
-            </section>
-
-            {/* RESUMO */}
-            <section
-              style={{
-                marginTop: "24px",
-                padding: "28px",
-                background: "#10141D",
-                border: "1px solid #1E2430",
-                borderRadius: "16px",
-              }}
-            >
-              <h2 style={{ marginTop: 0 }}>📖 O que você vai aprender</h2>
-
-              <p
-                style={{
-                  color: "#8A93A6",
-                  lineHeight: 1.8,
-                }}
-              >
-                Nesta aula você vai conhecer os fundamentos da Web e entender
-                como HTML, CSS e JavaScript trabalham juntos na construção de
-                páginas e aplicações web.
-              </p>
-
-              <div
-                style={{
-                  display: "grid",
-                  gridTemplateColumns:
-                    "repeat(auto-fit, minmax(180px, 1fr))",
-                  gap: "12px",
-                  marginTop: "24px",
-                }}
-              >
-                <div
-                  style={{
-                    padding: "18px",
-                    background: "#0A0D14",
-                    border: "1px solid #1E2430",
-                    borderRadius: "10px",
-                  }}
-                >
-                  <strong>HTML</strong>
-                  <p
-                    style={{
-                      color: "#8A93A6",
-                      fontSize: "14px",
-                      lineHeight: 1.6,
-                      marginBottom: 0,
-                    }}
-                  >
-                    Estrutura e conteúdo da página.
-                  </p>
                 </div>
 
-                <div
-                  style={{
-                    padding: "18px",
-                    background: "#0A0D14",
-                    border: "1px solid #1E2430",
-                    borderRadius: "10px",
-                  }}
-                >
-                  <strong>CSS</strong>
-                  <p
-                    style={{
-                      color: "#8A93A6",
-                      fontSize: "14px",
-                      lineHeight: 1.6,
-                      marginBottom: 0,
-                    }}
-                  >
-                    Aparência e apresentação visual.
-                  </p>
+                <div className="exercise-content">
+                  <p>{aula.exercicio}</p>
                 </div>
 
-                <div
-                  style={{
-                    padding: "18px",
-                    background: "#0A0D14",
-                    border: "1px solid #1E2430",
-                    borderRadius: "10px",
-                  }}
-                >
-                  <strong>JavaScript</strong>
-                  <p
-                    style={{
-                      color: "#8A93A6",
-                      fontSize: "14px",
-                      lineHeight: 1.6,
-                      marginBottom: 0,
-                    }}
-                  >
-                    Comportamento e interatividade.
-                  </p>
-                </div>
-              </div>
-            </section>
-
-            {/* EXERCÍCIO */}
-            <section
-              style={{
-                marginTop: "24px",
-                padding: "28px",
-                background: "#10141D",
-                border: "1px solid #1E2430",
-                borderRadius: "16px",
-              }}
-            >
-              <h2 style={{ marginTop: 0 }}>🧠 Exercício</h2>
-
-              {aula.exercicio ? (
-                <p
-                  style={{
-                    color: "#8A93A6",
-                    lineHeight: 1.8,
-                    whiteSpace: "pre-wrap",
-                  }}
-                >
-                  {aula.exercicio}
-                </p>
-              ) : (
-                <p
-                  style={{
-                    color: "#8A93A6",
-                    lineHeight: 1.8,
-                  }}
-                >
-                  Crie uma página HTML simples utilizando a estrutura básica
-                  apresentada na aula. Adicione um título, um cabeçalho e
-                  alguns parágrafos.
-                </p>
-              )}
-            </section>
-
-            {/* PROJETO */}
-            {aula.projeto && (
-              <section
-                style={{
-                  marginTop: "24px",
-                  padding: "28px",
-                  background: "#10141D",
-                  border: "1px solid #1E2430",
-                  borderRadius: "16px",
-                }}
-              >
-                <h2 style={{ marginTop: 0 }}>🚀 Projeto</h2>
-
-                <p
-                  style={{
-                    color: "#8A93A6",
-                    lineHeight: 1.8,
-                    whiteSpace: "pre-wrap",
-                  }}
-                >
-                  {aula.projeto}
-                </p>
               </section>
             )}
 
-            {/* DOCUMENTAÇÃO */}
+            {/* =================================================
+                PROJETO
+            ================================================== */}
+
+            {aula.projeto && (
+              <section className="content-card project-card">
+
+                <div className="card-header">
+                  <span className="card-icon">🚀</span>
+
+                  <div>
+                    <h2>Projeto</h2>
+
+                    <p>
+                      Coloque os conhecimentos em prática.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="project-content">
+                  <p>{aula.projeto}</p>
+                </div>
+
+              </section>
+            )}
+
+            {/* =================================================
+                DOCUMENTAÇÃO
+            ================================================== */}
+
             {aula.documentacaoUrl && (
-              <section
-                style={{
-                  marginTop: "24px",
-                  padding: "24px",
-                  background: "#10141D",
-                  border: "1px solid #1E2430",
-                  borderRadius: "16px",
-                }}
-              >
+              <section className="documentation-card">
+
+                <div>
+                  <span className="documentation-icon">
+                    📚
+                  </span>
+
+                  <div>
+                    <h2>Documentação</h2>
+
+                    <p>
+                      Consulte a documentação oficial para
+                      aprofundar seus conhecimentos.
+                    </p>
+                  </div>
+                </div>
+
                 <a
                   href={aula.documentacaoUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  style={{
-                    color: "#2E8BFF",
-                    textDecoration: "none",
-                    fontWeight: 600,
-                  }}
                 >
-                  📚 Acessar documentação
+                  Ver documentação →
                 </a>
+
               </section>
             )}
-          </div>
 
-          {/* SIDEBAR */}
-          <aside>
-            <div
-              style={{
-                position: "sticky",
-                top: "24px",
-                padding: "24px",
-                background: "#10141D",
-                border: "1px solid #1E2430",
-                borderRadius: "16px",
-              }}
-            >
-              <span
-                style={{
-                  color: "#2E8BFF",
-                  fontSize: "12px",
-                  fontWeight: 700,
-                }}
-              >
-                SEU PROGRESSO
-              </span>
+          </section>
 
-              <h3 style={{ marginBottom: "8px" }}>
-                {aula.modulo?.titulo || "Módulo"}
-              </h3>
+          {/* ===================================================
+              SIDEBAR
+          ==================================================== */}
 
-              <p
-                style={{
-                  marginTop: 0,
-                  color: "#8A93A6",
-                  fontSize: "14px",
-                  lineHeight: 1.6,
-                }}
-              >
+          <aside className="lesson-sidebar">
+
+            {/* PROGRESSO */}
+
+            <div className="sidebar-card">
+
+              <div className="sidebar-title">
+                <span>📊</span>
+                <h3>Seu progresso</h3>
+              </div>
+
+              <div className="progress-info">
+                <span>Aula {aula.ordem}</span>
+                <span>Em andamento</span>
+              </div>
+
+              <div className="progress-bar">
+                <div className="progress-fill" />
+              </div>
+
+              <p className="progress-text">
                 Continue estudando para avançar no roadmap.
               </p>
 
-              <div
-                style={{
-                  height: "6px",
-                  margin: "20px 0",
-                  background: "#1E2430",
-                  borderRadius: "999px",
-                  overflow: "hidden",
-                }}
-              >
-                <div
-                  style={{
-                    width: "12.5%",
-                    height: "100%",
-                    background: "#2E8BFF",
-                    borderRadius: "999px",
-                  }}
-                />
+            </div>
+
+            {/* MÓDULO */}
+
+            <div className="sidebar-card">
+
+              <div className="sidebar-title">
+                <span>🗺️</span>
+                <h3>Módulo atual</h3>
               </div>
 
-              <p
-                style={{
-                  color: "#8A93A6",
-                  fontSize: "13px",
-                  marginBottom: "20px",
-                }}
-              >
-                Aula {aula.ordem} do módulo
-              </p>
+              <div className="module-info">
+
+                <strong>
+                  {aula.modulo.titulo}
+                </strong>
+
+                <span>
+                  {aula.modulo.tecnologia.nome}
+                </span>
+
+              </div>
 
               <Link
-                href="/roadmaps/html-css"
-                style={{
-                  display: "block",
-                  padding: "12px",
-                  borderRadius: "8px",
-                  border: "1px solid #1E2430",
-                  color: "#EDF0F5",
-                  textDecoration: "none",
-                  textAlign: "center",
-                  fontSize: "14px",
-                  fontWeight: 600,
-                }}
+                href="/roadmaps"
+                className="module-link"
               >
-                Ver roadmap completo
+                Ver roadmap →
               </Link>
+
             </div>
+
+            {/* PRÓXIMA AULA */}
+
+            <div className="sidebar-card next-card">
+
+              <span className="next-label">
+                PRÓXIMO PASSO
+              </span>
+
+              <h3>
+                Continue sua jornada
+              </h3>
+
+              <p>
+                Depois desta aula, avance para o próximo
+                conteúdo do módulo.
+              </p>
+
+            </div>
+
           </aside>
+
         </div>
       </div>
 
-      {/* RESPONSIVIDADE */}
+      {/* =====================================================
+          ESTILOS
+      ====================================================== */}
+
       <style>{`
-        @media (max-width: 850px) {
-          main > div > div {
-            grid-template-columns: 1fr !important;
+        .lesson-page {
+          min-height: 100vh;
+          background: #0A0D14;
+          color: #EDF0F5;
+          padding: 32px 20px 80px;
+        }
+
+        .lesson-container {
+          width: 100%;
+          max-width: 1250px;
+          margin: 0 auto;
+        }
+
+        /* BREADCRUMB */
+
+        .breadcrumb {
+          display: flex;
+          flex-wrap: wrap;
+          align-items: center;
+          gap: 9px;
+          color: #5C6478;
+          font-size: 14px;
+          margin-bottom: 35px;
+        }
+
+        .breadcrumb a {
+          color: #8A93A6;
+          text-decoration: none;
+        }
+
+        .breadcrumb a:hover {
+          color: #2E8BFF;
+        }
+
+        .breadcrumb strong {
+          color: #EDF0F5;
+          font-weight: 500;
+        }
+
+        /* HEADER */
+
+        .lesson-header {
+          margin-bottom: 35px;
+        }
+
+        .lesson-label {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          margin-bottom: 15px;
+        }
+
+        .lesson-number {
+          display: inline-flex;
+          align-items: center;
+          padding: 6px 10px;
+          border-radius: 7px;
+          background: rgba(46, 139, 255, 0.1);
+          border: 1px solid rgba(46, 139, 255, 0.2);
+          color: #2E8BFF;
+          font-size: 12px;
+          font-weight: 700;
+          letter-spacing: 0.5px;
+        }
+
+        .lesson-tech {
+          color: #8A93A6;
+          font-size: 14px;
+        }
+
+        .lesson-header h1 {
+          margin: 0;
+          font-size: clamp(32px, 5vw, 52px);
+          line-height: 1.08;
+          letter-spacing: -1.5px;
+        }
+
+        .lesson-description {
+          max-width: 800px;
+          margin: 18px 0 0;
+          color: #8A93A6;
+          font-size: 17px;
+          line-height: 1.7;
+        }
+
+        .lesson-meta {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 20px;
+          margin-top: 20px;
+          color: #8A93A6;
+          font-size: 14px;
+        }
+
+        /* GRID */
+
+        .lesson-grid {
+          display: grid;
+          grid-template-columns: minmax(0, 1fr) 310px;
+          gap: 28px;
+          align-items: start;
+        }
+
+        .lesson-main {
+          min-width: 0;
+        }
+
+        /* VIDEO */
+
+        .video-wrapper {
+          position: relative;
+          width: 100%;
+          aspect-ratio: 16 / 9;
+          overflow: hidden;
+          background: #000;
+          border-radius: 16px;
+          border: 1px solid #1E2430;
+          box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+        }
+
+        .video-wrapper iframe {
+          position: absolute;
+          inset: 0;
+          width: 100%;
+          height: 100%;
+          border: 0;
+        }
+
+        .video-unavailable {
+          aspect-ratio: 16 / 9;
+          border-radius: 16px;
+          border: 1px solid #1E2430;
+          background: #10141D;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          color: #8A93A6;
+          text-align: center;
+        }
+
+        .video-unavailable span {
+          font-size: 40px;
+          margin-bottom: 12px;
+        }
+
+        /* CONTENT CARDS */
+
+        .content-card {
+          margin-top: 24px;
+          padding: 28px;
+          background: #10141D;
+          border: 1px solid #1E2430;
+          border-radius: 16px;
+        }
+
+        .card-header {
+          display: flex;
+          align-items: flex-start;
+          gap: 14px;
+          margin-bottom: 22px;
+        }
+
+        .card-icon {
+          width: 42px;
+          height: 42px;
+          flex-shrink: 0;
+          border-radius: 10px;
+          background: #181D27;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 20px;
+        }
+
+        .card-header h2 {
+          margin: 0;
+          font-size: 21px;
+        }
+
+        .card-header p {
+          margin: 5px 0 0;
+          color: #5C6478;
+          font-size: 14px;
+        }
+
+        .summary-content,
+        .exercise-content,
+        .project-content {
+          color: #AEB6C6;
+          line-height: 1.8;
+        }
+
+        .summary-content p,
+        .exercise-content p,
+        .project-content p {
+          margin: 0 0 14px;
+        }
+
+        .summary-content p:last-child,
+        .exercise-content p:last-child,
+        .project-content p:last-child {
+          margin-bottom: 0;
+        }
+
+        /* EXERCISE */
+
+        .exercise-card {
+          border-color: rgba(124, 92, 255, 0.25);
+        }
+
+        .exercise-content {
+          padding: 18px;
+          border-radius: 10px;
+          background: rgba(124, 92, 255, 0.06);
+        }
+
+        /* PROJECT */
+
+        .project-card {
+          border-color: rgba(46, 139, 255, 0.2);
+        }
+
+        .project-content {
+          padding: 18px;
+          border-radius: 10px;
+          background: rgba(46, 139, 255, 0.05);
+        }
+
+        /* DOCUMENTATION */
+
+        .documentation-card {
+          margin-top: 24px;
+          padding: 22px;
+          border: 1px solid #1E2430;
+          border-radius: 14px;
+          background: #10141D;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 20px;
+        }
+
+        .documentation-card > div {
+          display: flex;
+          align-items: center;
+          gap: 14px;
+        }
+
+        .documentation-icon {
+          width: 42px;
+          height: 42px;
+          border-radius: 10px;
+          background: #181D27;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .documentation-card h2 {
+          margin: 0;
+          font-size: 17px;
+        }
+
+        .documentation-card p {
+          margin: 4px 0 0;
+          color: #5C6478;
+          font-size: 13px;
+        }
+
+        .documentation-card a {
+          flex-shrink: 0;
+          color: #2E8BFF;
+          text-decoration: none;
+          font-size: 14px;
+          font-weight: 600;
+        }
+
+        .documentation-card a:hover {
+          text-decoration: underline;
+        }
+
+        /* SIDEBAR */
+
+        .lesson-sidebar {
+          position: sticky;
+          top: 24px;
+          display: flex;
+          flex-direction: column;
+          gap: 16px;
+        }
+
+        .sidebar-card {
+          padding: 22px;
+          background: #10141D;
+          border: 1px solid #1E2430;
+          border-radius: 14px;
+        }
+
+        .sidebar-title {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          margin-bottom: 20px;
+        }
+
+        .sidebar-title span {
+          font-size: 18px;
+        }
+
+        .sidebar-title h3 {
+          margin: 0;
+          font-size: 16px;
+        }
+
+        .progress-info {
+          display: flex;
+          justify-content: space-between;
+          gap: 10px;
+          color: #8A93A6;
+          font-size: 13px;
+          margin-bottom: 10px;
+        }
+
+        .progress-bar {
+          width: 100%;
+          height: 7px;
+          background: #1E2430;
+          border-radius: 999px;
+          overflow: hidden;
+        }
+
+        .progress-fill {
+          width: 0%;
+          height: 100%;
+          background: linear-gradient(
+            90deg,
+            #2E8BFF,
+            #7C5CFF
+          );
+          border-radius: inherit;
+        }
+
+        .progress-text {
+          margin: 12px 0 0;
+          color: #5C6478;
+          font-size: 12px;
+          line-height: 1.6;
+        }
+
+        .module-info {
+          display: flex;
+          flex-direction: column;
+          gap: 5px;
+        }
+
+        .module-info strong {
+          color: #EDF0F5;
+          font-size: 15px;
+        }
+
+        .module-info span {
+          color: #5C6478;
+          font-size: 13px;
+        }
+
+        .module-link {
+          display: block;
+          margin-top: 18px;
+          color: #2E8BFF;
+          font-size: 13px;
+          text-decoration: none;
+          font-weight: 600;
+        }
+
+        .module-link:hover {
+          text-decoration: underline;
+        }
+
+        .next-card {
+          background: linear-gradient(
+            145deg,
+            rgba(46, 139, 255, 0.08),
+            rgba(124, 92, 255, 0.08)
+          );
+        }
+
+        .next-label {
+          color: #2E8BFF;
+          font-size: 10px;
+          font-weight: 800;
+          letter-spacing: 1px;
+        }
+
+        .next-card h3 {
+          margin: 10px 0 8px;
+          font-size: 17px;
+        }
+
+        .next-card p {
+          margin: 0;
+          color: #8A93A6;
+          font-size: 13px;
+          line-height: 1.6;
+        }
+
+        /* RESPONSIVE */
+
+        @media (max-width: 900px) {
+          .lesson-grid {
+            grid-template-columns: 1fr;
           }
 
-          aside {
-            display: none;
+          .lesson-sidebar {
+            position: static;
+          }
+        }
+
+        @media (max-width: 600px) {
+          .lesson-page {
+            padding: 24px 14px 60px;
+          }
+
+          .breadcrumb {
+            font-size: 12px;
+          }
+
+          .content-card {
+            padding: 20px;
+          }
+
+          .documentation-card {
+            flex-direction: column;
+            align-items: flex-start;
+          }
+
+          .documentation-card a {
+            margin-left: 56px;
           }
         }
       `}</style>
