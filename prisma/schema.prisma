@@ -76,25 +76,26 @@ model Aula {
 }
 
 model Progresso {
-  id             Int       @id @default(autoincrement()) @map("id_progresso")
-  userId         Int       @map("id_user")
-  aulaId         Int       @map("id_aula")
-  concluido      Boolean   @default(false)
-  dataConclusao  DateTime? @map("data_conclusao")
+  id            Int       @id @default(autoincrement()) @map("id_progresso")
+  userId        Int       @map("id_user")
+  aulaId        Int       @map("id_aula")
+  concluido     Boolean   @default(false)
+  dataConclusao DateTime? @map("data_conclusao")
 
-  user           User      @relation(
+  user          User      @relation(
     fields: [userId],
     references: [id],
     onDelete: Cascade
   )
 
-  aula           Aula      @relation(
+  aula          Aula      @relation(
     fields: [aulaId],
     references: [id],
     onDelete: Cascade
   )
 
   @@unique([userId, aulaId])
+
   @@map("Progresso")
 }
 
@@ -116,5 +117,6 @@ model Favoritos {
   )
 
   @@unique([userId, tecnologiaId])
+
   @@map("Favoritos")
 }
