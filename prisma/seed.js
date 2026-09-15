@@ -309,8 +309,42 @@ const tecnologias = [
   },
 ];
 
+/*
+|--------------------------------------------------------------------------
+| AULAS
+|--------------------------------------------------------------------------
+| As aulas ficam separadas das tecnologias e módulos.
+| Cada aula aponta para uma tecnologia e para o módulo através
+| da ordem do módulo.
+*/
+
+const aulas = [
+  {
+    tecnologia: "HTML & CSS",
+    moduloOrdem: 1,
+    titulo: "Introdução ao HTML",
+    descricao:
+      "Aprenda os fundamentos do HTML, entenda a estrutura básica de uma página e crie seu primeiro documento HTML.",
+    youtubeUrl: "https://www.youtube.com/watch?v=iZ1ucWosOww",
+    documentacaoUrl:
+      "https://developer.mozilla.org/pt-BR/docs/Web/HTML",
+    projeto:
+      "Criar uma página HTML simples contendo título, parágrafos e uma estrutura básica de documento.",
+    exercicio:
+      "Crie seu primeiro arquivo HTML utilizando a estrutura básica apresentada na aula.",
+    ordem: 1,
+    tempoEstimado: 30,
+  },
+];
+
 async function main() {
   console.log("🌱 Iniciando seed do DevRoad...\n");
+
+  /*
+  |--------------------------------------------------------------------------
+  | TECNOLOGIAS E MÓDULOS
+  |--------------------------------------------------------------------------
+  */
 
   for (const tecnologiaData of tecnologias) {
     const { modulos, ...dadosTecnologia } = tecnologiaData;
@@ -369,7 +403,85 @@ async function main() {
     console.log("");
   }
 
-  console.log("✅ Seed concluído com sucesso!");
+  /*
+  |--------------------------------------------------------------------------
+  | AULAS
+  |--------------------------------------------------------------------------
+  */
+
+  console.log("📚 Cadastrando aulas...\n");
+
+  for (const aulaData of aulas) {
+    const tecnologia = await prisma.tecnologias.findUnique({
+      where: {
+        nome: aulaData.tecnologia,
+      },
+    });
+
+    if (!tecnologia) {
+      throw new Error(
+        `Tecnologia "${aulaData.tecnologia}" não encontrada.`
+      );
+    }
+
+    const modulo = await prisma.modulo.findFirst({
+      where: {
+        tecnologiaId: tecnologia.id,
+        ordem: aulaData.moduloOrdem,
+      },
+    });
+
+    if (!modulo) {
+      throw new Error(
+        `Módulo ${aulaData.moduloOrdem} da tecnologia "${aulaData.tecnologia}" não encontrado.`
+      );
+    }
+
+    const aulaExistente = await prisma.aula.findFirst({
+      where: {
+        moduloId: modulo.id,
+        ordem: aulaData.ordem,
+      },
+    });
+
+    if (aulaExistente) {
+      await prisma.aula.update({
+        where: {
+          id: aulaExistente.id,
+        },
+
+        data: {
+          titulo: aulaData.titulo,
+          descricao: aulaData.descricao,
+          youtubeUrl: aulaData.youtubeUrl,
+          documentacaoUrl: aulaData.documentacaoUrl,
+          projeto: aulaData.projeto,
+          exercicio: aulaData.exercicio,
+          tempoEstimado: aulaData.tempoEstimado,
+        },
+      });
+
+      console.log(`   ↻ Aula atualizada: ${aulaData.titulo}`);
+    } else {
+      await prisma.aula.create({
+        data: {
+          moduloId: modulo.id,
+          titulo: aulaData.titulo,
+          descricao: aulaData.descricao,
+          youtubeUrl: aulaData.youtubeUrl,
+          documentacaoUrl: aulaData.documentacaoUrl,
+          projeto: aulaData.projeto,
+          exercicio: aulaData.exercicio,
+          ordem: aulaData.ordem,
+          tempoEstimado: aulaData.tempoEstimado,
+        },
+      });
+
+      console.log(`   ✓ Aula criada: ${aulaData.titulo}`);
+    }
+  }
+
+  console.log("\n✅ Seed concluído com sucesso!");
 }
 
 main()
