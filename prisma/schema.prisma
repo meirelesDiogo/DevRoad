@@ -39,28 +39,46 @@ model Modulo {
   tecnologiaId Int         @map("id_tecnologia")
   titulo       String      @db.VarChar(150)
   descricao    String?
-  ordem       Int
+  ordem        Int
 
-  tecnologia   Tecnologias @relation(fields: [tecnologiaId], references: [id], onDelete: Cascade)
-  aulas        Aula[]
+  tecnologia Tecnologias @relation(
+    fields: [tecnologiaId],
+    references: [id_tecnologia],
+    onDelete: Cascade
+  )
+
+  aulas Aula[]
+
+  @@unique([tecnologiaId, ordem])
 
   @@map("Modulos")
 }
 
 model Aula {
-  id              Int       @id @default(autoincrement()) @map("id_aula")
-  moduloId        Int       @map("id_modulo")
-  titulo          String    @db.VarChar(150)
+  id              Int      @id @default(autoincrement()) @map("id_aula")
+  moduloId        Int      @map("id_modulo")
+  titulo          String   @db.VarChar(150)
   descricao       String?
-  youtubeUrl      String?   @map("youtube_url") @db.VarChar(500)
-  documentacaoUrl String?   @map("documentacao_url") @db.VarChar(500)
+
+  youtubeUrl      String?  @map("youtube_url") @db.VarChar(500)
+  youtubeCanal    String?  @map("youtube_canal") @db.VarChar(150)
+  documentacaoUrl String?  @map("documentacao_url") @db.VarChar(500)
+
   projeto         String?
   exercicio       String?
-  ordem           Int
-  tempoEstimado   Int?      @map("tempo_estimado")
 
-  modulo          Modulo    @relation(fields: [moduloId], references: [id], onDelete: Cascade)
-  progresso       Progresso[]
+  ordem           Int
+  tempoEstimado   Int?     @map("tempo_estimado")
+
+  modulo Modulo @relation(
+    fields: [moduloId],
+    references: [id_modulo],
+    onDelete: Cascade
+  )
+
+  progresso Progresso[]
+
+  @@unique([moduloId, ordem])
 
   @@map("Aulas")
 }
@@ -72,8 +90,17 @@ model Progresso {
   concluido     Boolean   @default(false)
   dataConclusao DateTime? @map("data_conclusao")
 
-  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  aula          Aula      @relation(fields: [aulaId], references: [id], onDelete: Cascade)
+  user User @relation(
+    fields: [userId],
+    references: [id_user],
+    onDelete: Cascade
+  )
+
+  aula Aula @relation(
+    fields: [aulaId],
+    references: [id_aula],
+    onDelete: Cascade
+  )
 
   @@unique([userId, aulaId])
 
@@ -81,12 +108,21 @@ model Progresso {
 }
 
 model Favoritos {
-  id           Int          @id @default(autoincrement()) @map("id_favorito")
-  userId       Int          @map("id_user")
-  tecnologiaId Int          @map("id_tecnologia")
+  id           Int @id @default(autoincrement()) @map("id_favorito")
+  userId       Int @map("id_user")
+  tecnologiaId Int @map("id_tecnologia")
 
-  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
-  tecnologia   Tecnologias  @relation(fields: [tecnologiaId], references: [id], onDelete: Cascade)
+  user User @relation(
+    fields: [userId],
+    references: [id_user],
+    onDelete: Cascade
+  )
+
+  tecnologia Tecnologias @relation(
+    fields: [tecnologiaId],
+    references: [id_tecnologia],
+    onDelete: Cascade
+  )
 
   @@unique([userId, tecnologiaId])
 
