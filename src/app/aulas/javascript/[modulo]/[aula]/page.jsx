@@ -1,1 +1,883 @@
-import Link from "next/link"; import { redirect } from "next/navigation"; import { auth } from "@/auth"; import { prisma } from "@/lib/prisma"; export default async function AulaJavaScriptPage({ params }) { const session = await auth(); if (!session) { redirect("/login"); } const { modulo, aula } = await params; const moduloOrdem = Number(modulo); const aulaOrdem = Number(aula); if ( Number.isNaN(moduloOrdem) || Number.isNaN(aulaOrdem) ) { redirect("/roadmaps/javascript"); } /* * Busca somente o módulo atual. * * Isso é importante: * as aulas do módulo 02 não entram nesta lista. * * Portanto, a última aula do módulo 01 nunca poderá * apontar automaticamente para o módulo 02. */ const moduloAtual = await prisma.modulo.findFirst({ where: { ordem: moduloOrdem, tecnologia: { nome: "JavaScript", }, }, include: { tecnologia: true, aulas: { orderBy: { ordem: "asc", }, }, }, }); if (!moduloAtual) { redirect("/roadmaps/javascript"); } /* * Procura a aula dentro do módulo atual. */ const aulaAtual = moduloAtual.aulas.find( (item) => item.ordem === aulaOrdem ); if (!aulaAtual) { redirect( `/aulas/javascript/${String(moduloOrdem).padStart( 2, "0" )}/01` ); } /* * Índice da aula atual dentro DO MÓDULO. */ const indiceAtual = moduloAtual.aulas.findIndex( (item) => item.id === aulaAtual.id ); /* * Aula anterior. * * Se estiver na primeira aula, não existe anterior. */ const aulaAnterior = indiceAtual > 0 ? moduloAtual.aulas[indiceAtual - 1] : null; /* * Aula seguinte. * * IMPORTANTE: * aqui só procuramos dentro de moduloAtual.aulas. * * Portanto: * * Módulo 01 / Aula 10 * ↓ * não vai para * Módulo 02 / Aula 01 * * O botão simplesmente deixa de existir. */ const aulaProxima = indiceAtual < moduloAtual.aulas.length - 1 ? moduloAtual.aulas[indiceAtual + 1] : null; function getYoutubeId(url) { if (!url) return null; try { const parsed = new URL(url); if (parsed.hostname.includes("youtube.com")) { if (parsed.pathname === "/watch") { return parsed.searchParams.get("v"); } if (parsed.pathname.startsWith("/embed/")) { return parsed.pathname.split("/embed/")[1]; } if (parsed.pathname.startsWith("/shorts/")) { return parsed.pathname.split("/shorts/")[1]; } } if (parsed.hostname === "youtu.be") { return parsed.pathname.slice(1); } return null; } catch { return null; } } const youtubeId = getYoutubeId(aulaAtual.youtubeUrl); const numeroModulo = String(moduloAtual.ordem).padStart(2, "0"); const numeroAula = String(aulaAtual.ordem).padStart(2, "0"); return ( <> <style>{` @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap'); * { box-sizing: border-box; } body { margin: 0; background: #0A0D14; color: #EDF0F5; font-family: 'Inter', sans-serif; } a { color: inherit; } .page { min-height: 100vh; background: radial-gradient( circle at 50% -10%, rgba(46, 139, 255, 0.08), transparent 35% ), #0A0D14; } /* HEADER */ .header { height: 70px; border-bottom: 1px solid #1E2430; background: rgba(10, 13, 20, 0.94); backdrop-filter: blur(12px); position: sticky; top: 0; z-index: 50; } .header-content { max-width: 1250px; height: 100%; margin: 0 auto; padding: 0 24px; display: flex; align-items: center; justify-content: space-between; } .logo { text-decoration: none; font-family: 'Space Grotesk', sans-serif; font-size: 22px; font-weight: 700; } .logo span { color: #2E8BFF; } .back-link { color: #8A93A6; text-decoration: none; font-size: 13px; transition: 0.2s; } .back-link:hover { color: #EDF0F5; } /* LAYOUT */ .layout { max-width: 1250px; margin: 0 auto; padding: 35px 24px 70px; display: grid; grid-template-columns: 280px minmax(0, 1fr); gap: 30px; } /* SIDEBAR */ .sidebar { position: sticky; top: 100px; height: fit-content; border: 1px solid #1E2430; border-radius: 14px; background: #10141D; overflow: hidden; } .sidebar-header { padding: 20px; border-bottom: 1px solid #1E2430; } .sidebar-label { color: #2E8BFF; font-family: 'JetBrains Mono', monospace; font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 7px; } .sidebar-title { font-family: 'Space Grotesk', sans-serif; font-size: 17px; font-weight: 600; } .lesson-list { padding: 8px; } .lesson { display: flex; align-items: center; gap: 11px; padding: 10px 11px; border-radius: 8px; text-decoration: none; color: #8A93A6; font-size: 12px; transition: 0.2s; } .lesson:hover { background: #151A24; color: #EDF0F5; } .lesson.active { background: rgba(46, 139, 255, 0.10); color: #EDF0F5; } .lesson-number { min-width: 25px; color: #5C6478; font-family: 'JetBrains Mono', monospace; font-size: 10px; } .lesson.active .lesson-number { color: #2E8BFF; } /* CONTENT */ .content { min-width: 0; } .breadcrumb { margin-bottom: 22px; color: #5C6478; font-family: 'JetBrains Mono', monospace; font-size: 11px; } .breadcrumb span { color: #2E8BFF; } .title { font-family: 'Space Grotesk', sans-serif; font-size: clamp(32px, 5vw, 48px); line-height: 1.08; letter-spacing: -1.5px; margin: 0 0 15px; } .description { color: #8A93A6; font-size: 15px; line-height: 1.7; margin-bottom: 30px; } /* VIDEO */ .video-container { width: 100%; aspect-ratio: 16 / 9; overflow: hidden; border: 1px solid #1E2430; border-radius: 14px; background: #10141D; margin-bottom: 28px; } .video-container iframe { width: 100%; height: 100%; border: 0; } .no-video { padding: 45px 25px; text-align: center; border: 1px dashed #1E2430; border-radius: 14px; background: #10141D; margin-bottom: 28px; } .no-video-title { font-family: 'Space Grotesk', sans-serif; font-size: 19px; margin-bottom: 8px; } .no-video p { color: #8A93A6; font-size: 13px; margin-bottom: 15px; } .docs-link { color: #2E8BFF; text-decoration: none; font-size: 13px; } /* CARDS */ .card { border: 1px solid #1E2430; border-radius: 14px; background: #10141D; padding: 24px; margin-bottom: 18px; } .card-label { color: #2E8BFF; font-family: 'JetBrains Mono', monospace; font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 9px; } .card h2 { font-family: 'Space Grotesk', sans-serif; font-size: 21px; margin: 0 0 12px; } .card p { color: #8A93A6; font-size: 14px; line-height: 1.75; white-space: pre-line; } /* CANAL */ .canal { color: #5C6478; font-size: 12px; margin-top: -15px; margin-bottom: 25px; } .canal strong { color: #8A93A6; } /* NAVIGATION */ .navigation { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 35px; } .nav-button { min-height: 82px; padding: 17px 19px; border: 1px solid #1E2430; border-radius: 12px; background: #10141D; text-decoration: none; transition: 0.2s; } .nav-button:hover { border-color: #2E8BFF; transform: translateY(-2px); } .nav-button.next { text-align: right; } .nav-label { color: #5C6478; font-family: 'JetBrains Mono', monospace; font-size: 10px; text-transform: uppercase; margin-bottom: 8px; } .nav-title { color: #EDF0F5; font-size: 13px; font-weight: 600; } .module-end { margin-top: 35px; padding: 22px; border: 1px dashed #1E2430; border-radius: 12px; background: rgba(16, 20, 29, 0.6); text-align: center; } .module-end strong { display: block; font-family: 'Space Grotesk', sans-serif; font-size: 17px; margin-bottom: 7px; } .module-end p { color: #8A93A6; font-size: 13px; margin: 0 0 16px; } .roadmap-button { display: inline-block; padding: 10px 16px; border: 1px solid #2E8BFF; border-radius: 8px; color: #2E8BFF; text-decoration: none; font-size: 12px; font-weight: 600; } .roadmap-button:hover { background: rgba(46, 139, 255, 0.08); } @media (max-width: 850px) { .layout { grid-template-columns: 1fr; } .sidebar { position: static; } } @media (max-width: 600px) { .header-content { padding: 0 18px; } .layout { padding: 25px 18px 60px; } .navigation { grid-template-columns: 1fr; } .nav-button.next { text-align: left; } .title { font-size: 34px; } } `}</style> <div className="page"> <header className="header"> <div className="header-content"> <Link href="/" className="logo"> Dev<span>Road</span> </Link> <Link href="/roadmaps/javascript" className="back-link" > ← Voltar para JavaScript </Link> </div> </header> <main className="layout"> {/* SIDEBAR — SOMENTE O MÓDULO ATUAL */} <aside className="sidebar"> <div className="sidebar-header"> <div className="sidebar-label"> Módulo {numeroModulo} </div> <div className="sidebar-title"> {moduloAtual.titulo} </div> </div> <div className="lesson-list"> {moduloAtual.aulas.map((aula) => ( <Link key={aula.id} href={`/aulas/javascript/${numeroModulo}/${String( aula.ordem ).padStart(2, "0")}`} className={`lesson ${ aula.id === aulaAtual.id ? "active" : "" }`} > <span className="lesson-number"> {String(aula.ordem).padStart(2, "0")} </span> <span>{aula.titulo}</span> </Link> ))} </div> </aside> {/* AULA */} <section className="content"> <div className="breadcrumb"> JAVASCRIPT / MÓDULO {numeroModulo} /{" "} <span>AULA {numeroAula}</span> </div> <h1 className="title">{aulaAtual.titulo}</h1> {aulaAtual.descricao && ( <p className="description"> {aulaAtual.descricao} </p> )} {/* VÍDEO */} {youtubeId ? ( <div className="video-container"> <iframe src={`https://www.youtube.com/embed/${youtubeId}`} title={aulaAtual.titulo} allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowFullScreen /> </div> ) : ( <div className="no-video"> <div className="no-video-title"> 📚 Vídeo não disponível </div> <p> Estude o conteúdo desta aula pela documentação recomendada. </p> {aulaAtual.documentacaoUrl && ( <a href={aulaAtual.documentacaoUrl} target="_blank" rel="noopener noreferrer" className="docs-link" > Acessar documentação → </a> )} </div> )} {aulaAtual.youtubeCanal && ( <div className="canal"> Vídeo por{" "} <strong>{aulaAtual.youtubeCanal}</strong> </div> )} {/* EXERCÍCIO */} {aulaAtual.exercicio && ( <article className="card"> <div className="card-label"> Prática </div> <h2>Exercício</h2> <p>{aulaAtual.exercicio}</p> </article> )} {/* PROJETO */} {aulaAtual.projeto && ( <article className="card"> <div className="card-label"> Projeto </div> <h2>Projeto da aula</h2> <p>{aulaAtual.projeto}</p> </article> )} {/* DOCUMENTAÇÃO */} {aulaAtual.documentacaoUrl && ( <article className="card"> <div className="card-label"> Documentação </div> <h2>Continue estudando</h2> <p> Consulte a documentação recomendada para aprofundar o conteúdo desta aula. </p> <br /> <a href={aulaAtual.documentacaoUrl} target="_blank" rel="noopener noreferrer" className="docs-link" > Abrir documentação → </a> </article> )} {/* NAVEGAÇÃO */} {aulaAnterior || aulaProxima ? ( <div className="navigation"> {aulaAnterior ? ( <Link href={`/aulas/javascript/${numeroModulo}/${String( aulaAnterior.ordem ).padStart(2, "0")}`} className="nav-button" > <div className="nav-label"> ← Anterior </div> <div className="nav-title"> {aulaAnterior.titulo} </div> </Link> ) : ( <div /> )} {aulaProxima && ( <Link href={`/aulas/javascript/${numeroModulo}/${String( aulaProxima.ordem ).padStart(2, "0")}`} className="nav-button next" > <div className="nav-label"> Próxima → </div> <div className="nav-title"> {aulaProxima.titulo} </div> </Link> )} </div> ) : null} {/* FIM DO MÓDULO */} {!aulaProxima && ( <div className="module-end"> <strong> 🎉 Você chegou ao final deste módulo! </strong> <p> O próximo módulo não é liberado automaticamente. Volte ao roadmap para escolher a próxima etapa. </p> <Link href="/roadmaps/javascript" className="roadmap-button" > Voltar para o roadmap → </Link> </div> )} </section> </main> </div> </> ); }
+import Link from "next/link";
+import { redirect, notFound } from "next/navigation";
+import { auth } from "@/auth";
+import { prisma } from "@/lib/prisma";
+
+function extrairVideoId(url) {
+  if (!url) return null;
+
+  try {
+    const urlObj = new URL(url);
+
+    // https://www.youtube.com/watch?v=XXXXXXXX
+    if (urlObj.hostname.includes("youtube.com")) {
+      return urlObj.searchParams.get("v");
+    }
+
+    // https://youtu.be/XXXXXXXX
+    if (urlObj.hostname === "youtu.be") {
+      return urlObj.pathname.replace("/", "");
+    }
+
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+export async function generateMetadata({ params }) {
+  const { modulo, aula } = await params;
+
+  const moduloNumero = Number(modulo);
+  const aulaNumero = Number(aula);
+
+  if (
+    !Number.isInteger(moduloNumero) ||
+    !Number.isInteger(aulaNumero)
+  ) {
+    return {
+      title: "Aula | DevRoad",
+    };
+  }
+
+  const aulaData = await prisma.aula.findFirst({
+    where: {
+      ordem: aulaNumero,
+
+      modulo: {
+        ordem: moduloNumero,
+
+        tecnologia: {
+          nome: "JavaScript",
+        },
+      },
+    },
+
+    select: {
+      titulo: true,
+      descricao: true,
+    },
+  });
+
+  if (!aulaData) {
+    return {
+      title: "Aula não encontrada | DevRoad",
+    };
+  }
+
+  return {
+    title: `${aulaData.titulo} | DevRoad`,
+    description:
+      aulaData.descricao ||
+      `${aulaData.titulo} - JavaScript | DevRoad`,
+  };
+}
+
+export default async function AulaPage({ params }) {
+  // ============================================================
+  // AUTENTICAÇÃO
+  // ============================================================
+
+  const session = await auth();
+
+  if (!session?.user) {
+    redirect("/login");
+  }
+
+  // ============================================================
+  // PARÂMETROS DA URL
+  // ============================================================
+
+  const { modulo, aula } = await params;
+
+  const moduloNumero = Number(modulo);
+  const aulaNumero = Number(aula);
+
+  if (
+    !Number.isInteger(moduloNumero) ||
+    !Number.isInteger(aulaNumero) ||
+    moduloNumero < 1 ||
+    moduloNumero > 8 ||
+    aulaNumero < 1
+  ) {
+    notFound();
+  }
+
+  // ============================================================
+  // BUSCAR AULA
+  // ============================================================
+
+  const aulaData = await prisma.aula.findFirst({
+    where: {
+      ordem: aulaNumero,
+
+      modulo: {
+        ordem: moduloNumero,
+
+        tecnologia: {
+          nome: "JavaScript",
+        },
+      },
+    },
+
+    include: {
+      modulo: {
+        include: {
+          tecnologia: true,
+
+          aulas: {
+            orderBy: {
+              ordem: "asc",
+            },
+
+            select: {
+              id: true,
+              titulo: true,
+              ordem: true,
+            },
+          },
+        },
+      },
+    },
+  });
+
+  if (!aulaData) {
+    notFound();
+  }
+
+  // ============================================================
+  // AULAS DO MÓDULO
+  // ============================================================
+
+  const aulasDoModulo = aulaData.modulo.aulas;
+
+  // ============================================================
+  // AULA ANTERIOR
+  // ============================================================
+
+  const aulaAnterior =
+    aulasDoModulo
+      .filter((item) => item.ordem < aulaData.ordem)
+      .sort((a, b) => b.ordem - a.ordem)[0] || null;
+
+  // ============================================================
+  // PRÓXIMA AULA
+  // ============================================================
+
+  const proximaAula =
+    aulasDoModulo
+      .filter((item) => item.ordem > aulaData.ordem)
+      .sort((a, b) => a.ordem - b.ordem)[0] || null;
+
+  // ============================================================
+  // YOUTUBE
+  // ============================================================
+
+  const videoId = extrairVideoId(aulaData.youtubeUrl);
+
+  // ============================================================
+  // URL DO ROADMAP
+  // ============================================================
+
+  const roadmapUrl = "/roadmaps/javascript";
+
+  return (
+    <main className="aula-page">
+      <div className="aula-container">
+
+        {/* ======================================================
+            BREADCRUMB
+        ====================================================== */}
+
+        <nav className="breadcrumb">
+          <Link href="/roadmaps">
+            Roadmaps
+          </Link>
+
+          <span>/</span>
+
+          <Link href={roadmapUrl}>
+            JavaScript
+          </Link>
+
+          <span>/</span>
+
+          <span>
+            Módulo {String(moduloNumero).padStart(2, "0")}
+          </span>
+
+          <span>/</span>
+
+          <span>
+            Aula {String(aulaNumero).padStart(2, "0")}
+          </span>
+        </nav>
+
+        {/* ======================================================
+            CABEÇALHO
+        ====================================================== */}
+
+        <header className="aula-header">
+          <div className="aula-label">
+            MÓDULO {String(moduloNumero).padStart(2, "0")}
+            {" • "}
+            AULA {String(aulaNumero).padStart(2, "0")}
+          </div>
+
+          <h1>
+            {aulaData.titulo}
+          </h1>
+
+          {aulaData.descricao && (
+            <p>
+              {aulaData.descricao}
+            </p>
+          )}
+
+          <div className="aula-meta">
+            {aulaData.tempoEstimado && (
+              <span>
+                ⏱ {aulaData.tempoEstimado} min
+              </span>
+            )}
+
+            <span>
+              📚 {aulaData.modulo.titulo}
+            </span>
+          </div>
+        </header>
+
+        {/* ======================================================
+            VÍDEO
+        ====================================================== */}
+
+        <section className="video-section">
+          {videoId ? (
+            <>
+              <div className="video-wrapper">
+                <iframe
+                  src={`https://www.youtube.com/embed/${videoId}`}
+                  title={aulaData.titulo}
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  allowFullScreen
+                />
+              </div>
+
+              {aulaData.youtubeCanal && (
+                <p className="video-credit">
+                  Vídeo por{" "}
+                  <strong>
+                    {aulaData.youtubeCanal}
+                  </strong>
+                </p>
+              )}
+            </>
+          ) : (
+            <div className="video-unavailable">
+              <div className="video-icon">
+                📚
+              </div>
+
+              <h2>
+                Vídeo não disponível
+              </h2>
+
+              <p>
+                Ainda não temos um vídeo selecionado para
+                esta aula. Você pode estudar este assunto
+                gratuitamente na documentação recomendada.
+              </p>
+
+              {aulaData.documentacaoUrl ? (
+                <a
+                  href={aulaData.documentacaoUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="documentation-button"
+                >
+                  Estudar documentação →
+                </a>
+              ) : (
+                <a
+                  href="https://developer.mozilla.org/pt-BR/docs/Web/JavaScript"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="documentation-button"
+                >
+                  Acessar documentação →
+                </a>
+              )}
+            </div>
+          )}
+        </section>
+
+        {/* ======================================================
+            CONTEÚDO
+        ====================================================== */}
+
+        <section className="aula-content">
+          <div className="aula-main">
+
+            {/* SOBRE A AULA */}
+
+            <article className="content-card">
+              <div className="card-label">
+                SOBRE ESTA AULA
+              </div>
+
+              <h2>
+                {aulaData.titulo}
+              </h2>
+
+              <p>
+                {aulaData.descricao ||
+                  "Nesta aula você irá aprender os principais conceitos relacionados a este assunto."}
+              </p>
+            </article>
+
+            {/* EXERCÍCIO */}
+
+            {aulaData.exercicio && (
+              <article className="content-card exercise-card">
+                <div className="card-label">
+                  EXERCÍCIO
+                </div>
+
+                <h2>
+                  Pratique
+                </h2>
+
+                <p>
+                  {aulaData.exercicio}
+                </p>
+              </article>
+            )}
+
+            {/* PROJETO */}
+
+            {aulaData.projeto && (
+              <article className="content-card project-card">
+                <div className="card-label">
+                  PROJETO
+                </div>
+
+                <h2>
+                  Projeto prático
+                </h2>
+
+                <p>
+                  {aulaData.projeto}
+                </p>
+              </article>
+            )}
+
+            {/* DOCUMENTAÇÃO */}
+
+            {aulaData.documentacaoUrl && videoId && (
+              <article className="content-card">
+                <div className="card-label">
+                  DOCUMENTAÇÃO
+                </div>
+
+                <h2>
+                  Continue estudando
+                </h2>
+
+                <p>
+                  Consulte a documentação para aprofundar
+                  o conteúdo desta aula.
+                </p>
+
+                <a
+                  href={aulaData.documentacaoUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="documentation-link"
+                >
+                  Abrir documentação →
+                </a>
+              </article>
+            )}
+          </div>
+
+          {/* ====================================================
+              SIDEBAR
+          ==================================================== */}
+
+          <aside className="aula-sidebar">
+            <div className="sidebar-card">
+
+              <div className="sidebar-header">
+                <span>
+                  MÓDULO {String(moduloNumero).padStart(2, "0")}
+                </span>
+
+                <strong>
+                  {aulaData.modulo.titulo}
+                </strong>
+              </div>
+
+              <div className="lesson-list">
+                {aulasDoModulo.map((item) => {
+                  const numero =
+                    String(item.ordem).padStart(2, "0");
+
+                  const atual =
+                    item.id === aulaData.id;
+
+                  return (
+                    <Link
+                      key={item.id}
+                      href={`/aulas/javascript/${String(
+                        moduloNumero
+                      ).padStart(2, "0")}/${numero}`}
+                      className={
+                        atual
+                          ? "lesson-item active"
+                          : "lesson-item"
+                      }
+                    >
+                      <span className="lesson-number">
+                        {numero}
+                      </span>
+
+                      <span className="lesson-title">
+                        {item.titulo}
+                      </span>
+                    </Link>
+                  );
+                })}
+              </div>
+            </div>
+          </aside>
+        </section>
+
+        {/* ======================================================
+            NAVEGAÇÃO
+        ====================================================== */}
+
+        <nav className="lesson-navigation">
+          {aulaAnterior ? (
+            <Link
+              href={`/aulas/javascript/${String(
+                moduloNumero
+              ).padStart(2, "0")}/${String(
+                aulaAnterior.ordem
+              ).padStart(2, "0")}`}
+              className="nav-lesson"
+            >
+              <span>
+                ← Aula anterior
+              </span>
+
+              <strong>
+                {aulaAnterior.titulo}
+              </strong>
+            </Link>
+          ) : (
+            <div />
+          )}
+
+          {proximaAula ? (
+            <Link
+              href={`/aulas/javascript/${String(
+                moduloNumero
+              ).padStart(2, "0")}/${String(
+                proximaAula.ordem
+              ).padStart(2, "0")}`}
+              className="nav-lesson next"
+            >
+              <span>
+                Próxima aula →
+              </span>
+
+              <strong>
+                {proximaAula.titulo}
+              </strong>
+            </Link>
+          ) : (
+            <Link
+              href={roadmapUrl}
+              className="nav-lesson next"
+            >
+              <span>
+                Módulo concluído →
+              </span>
+
+              <strong>
+                Voltar para JavaScript
+              </strong>
+            </Link>
+          )}
+        </nav>
+      </div>
+
+      {/* ========================================================
+          CSS
+      ======================================================== */}
+
+      <style>{`
+
+        .aula-page {
+          min-height: 100vh;
+          background: #0A0D14;
+          color: #EDF0F5;
+          padding: 40px 20px 80px;
+        }
+
+        .aula-container {
+          width: 100%;
+          max-width: 1200px;
+          margin: 0 auto;
+        }
+
+        .breadcrumb {
+          display: flex;
+          align-items: center;
+          flex-wrap: wrap;
+          gap: 8px;
+          margin-bottom: 35px;
+          color: #5C6478;
+          font-size: 14px;
+        }
+
+        .breadcrumb a {
+          color: #8A93A6;
+          text-decoration: none;
+        }
+
+        .breadcrumb a:hover {
+          color: #2E8BFF;
+        }
+
+        .aula-header {
+          margin-bottom: 30px;
+        }
+
+        .aula-label {
+          margin-bottom: 12px;
+          color: #2E8BFF;
+          font-family: "JetBrains Mono", monospace;
+          font-size: 13px;
+          font-weight: 700;
+          letter-spacing: .08em;
+        }
+
+        .aula-header h1 {
+          margin: 0;
+          font-size: clamp(30px, 5vw, 48px);
+          line-height: 1.1;
+          letter-spacing: -0.03em;
+        }
+
+        .aula-header p {
+          max-width: 800px;
+          margin-top: 18px;
+          color: #8A93A6;
+          font-size: 17px;
+          line-height: 1.7;
+        }
+
+        .aula-meta {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 10px;
+          margin-top: 20px;
+        }
+
+        .aula-meta span {
+          padding: 8px 12px;
+          border: 1px solid #1E2430;
+          border-radius: 8px;
+          background: #10141D;
+          color: #8A93A6;
+          font-size: 13px;
+        }
+
+        .video-section {
+          margin-bottom: 45px;
+        }
+
+        .video-wrapper {
+          width: 100%;
+          aspect-ratio: 16 / 9;
+          overflow: hidden;
+          border: 1px solid #1E2430;
+          border-radius: 16px;
+          background: #10141D;
+        }
+
+        .video-wrapper iframe {
+          width: 100%;
+          height: 100%;
+          display: block;
+          border: 0;
+        }
+
+        .video-credit {
+          margin: 10px 4px 0;
+          color: #5C6478;
+          font-size: 13px;
+        }
+
+        .video-credit strong {
+          color: #8A93A6;
+        }
+
+        .video-unavailable {
+          min-height: 360px;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          padding: 50px 25px;
+          border: 1px dashed #2A3140;
+          border-radius: 16px;
+          background: #10141D;
+          text-align: center;
+        }
+
+        .video-icon {
+          width: 64px;
+          height: 64px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          margin-bottom: 20px;
+          border-radius: 16px;
+          background: rgba(46, 139, 255, .10);
+          font-size: 30px;
+        }
+
+        .video-unavailable h2 {
+          margin: 0 0 12px;
+          font-size: 24px;
+        }
+
+        .video-unavailable p {
+          max-width: 580px;
+          margin: 0 0 25px;
+          color: #8A93A6;
+          line-height: 1.7;
+        }
+
+        .documentation-button,
+        .documentation-link {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          padding: 11px 17px;
+          border-radius: 9px;
+          background: #2E8BFF;
+          color: white;
+          text-decoration: none;
+          font-weight: 600;
+          transition: .2s ease;
+        }
+
+        .documentation-button:hover,
+        .documentation-link:hover {
+          opacity: .9;
+          transform: translateY(-2px);
+        }
+
+        .aula-content {
+          display: grid;
+          grid-template-columns: minmax(0, 1fr) 320px;
+          gap: 25px;
+          align-items: start;
+        }
+
+        .aula-main {
+          display: flex;
+          flex-direction: column;
+          gap: 20px;
+        }
+
+        .content-card {
+          padding: 28px;
+          border: 1px solid #1E2430;
+          border-radius: 14px;
+          background: #10141D;
+        }
+
+        .content-card h2 {
+          margin: 8px 0 12px;
+          font-size: 23px;
+        }
+
+        .content-card p {
+          margin: 0;
+          color: #8A93A6;
+          line-height: 1.75;
+        }
+
+        .card-label {
+          color: #7C5CFF;
+          font-family: "JetBrains Mono", monospace;
+          font-size: 11px;
+          font-weight: 700;
+          letter-spacing: .1em;
+        }
+
+        .exercise-card {
+          border-color: rgba(46, 139, 255, .25);
+        }
+
+        .project-card {
+          border-color: rgba(124, 92, 255, .25);
+        }
+
+        .aula-sidebar {
+          position: sticky;
+          top: 25px;
+        }
+
+        .sidebar-card {
+          overflow: hidden;
+          border: 1px solid #1E2430;
+          border-radius: 14px;
+          background: #10141D;
+        }
+
+        .sidebar-header {
+          display: flex;
+          flex-direction: column;
+          gap: 5px;
+          padding: 20px;
+          border-bottom: 1px solid #1E2430;
+        }
+
+        .sidebar-header span {
+          color: #2E8BFF;
+          font-family: "JetBrains Mono", monospace;
+          font-size: 11px;
+        }
+
+        .sidebar-header strong {
+          color: #EDF0F5;
+        }
+
+        .lesson-list {
+          display: flex;
+          flex-direction: column;
+          max-height: 600px;
+          overflow-y: auto;
+        }
+
+        .lesson-item {
+          display: flex;
+          gap: 12px;
+          padding: 13px 16px;
+          border-bottom: 1px solid rgba(30, 36, 48, .7);
+          color: #8A93A6;
+          text-decoration: none;
+          transition: .2s ease;
+        }
+
+        .lesson-item:hover {
+          background: #151A24;
+          color: #EDF0F5;
+        }
+
+        .lesson-item.active {
+          border-left: 3px solid #2E8BFF;
+          background: rgba(46, 139, 255, .10);
+          color: #EDF0F5;
+        }
+
+        .lesson-number {
+          min-width: 25px;
+          color: #5C6478;
+          font-family: "JetBrains Mono", monospace;
+          font-size: 12px;
+        }
+
+        .lesson-item.active .lesson-number {
+          color: #2E8BFF;
+        }
+
+        .lesson-title {
+          font-size: 13px;
+          line-height: 1.4;
+        }
+
+        .lesson-navigation {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 20px;
+          margin-top: 35px;
+        }
+
+        .nav-lesson {
+          display: flex;
+          flex-direction: column;
+          gap: 7px;
+          padding: 20px;
+          border: 1px solid #1E2430;
+          border-radius: 12px;
+          background: #10141D;
+          text-decoration: none;
+          transition: .2s ease;
+        }
+
+        .nav-lesson:hover {
+          border-color: #2E8BFF;
+          transform: translateY(-2px);
+        }
+
+        .nav-lesson span {
+          color: #5C6478;
+          font-size: 12px;
+        }
+
+        .nav-lesson strong {
+          color: #EDF0F5;
+          font-size: 14px;
+        }
+
+        .nav-lesson.next {
+          text-align: right;
+        }
+
+        @media (max-width: 850px) {
+          .aula-content {
+            grid-template-columns: 1fr;
+          }
+
+          .aula-sidebar {
+            position: static;
+            order: -1;
+          }
+
+          .lesson-list {
+            max-height: 350px;
+          }
+        }
+
+        @media (max-width: 600px) {
+          .aula-page {
+            padding: 25px 15px 60px;
+          }
+
+          .content-card {
+            padding: 20px;
+          }
+
+          .video-unavailable {
+            min-height: 300px;
+          }
+
+          .lesson-navigation {
+            grid-template-columns: 1fr;
+          }
+
+          .nav-lesson.next {
+            text-align: left;
+          }
+        }
+
+      `}</style>
+    </main>
+  );
+}
