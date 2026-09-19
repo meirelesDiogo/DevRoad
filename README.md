@@ -1,11 +1,11 @@
 # 🚀 DevRoad
 
 <p align="center">
-  <img src="https://capsule-render.vercel.app/api?type=waving&color=0:0D1117,50:00E599,100:4169E1&height=200&section=header&text=DevRoad&fontSize=55&fontColor=ffffff&animation=fadeIn&fontAlignY=35&desc=Aprenda.%20Pratique.%20Evolua.&descAlignY=55&descSize=18" width="100%">
+  <img src="https://capsule-render.vercel.app/api?type=waving&color=0:0A0D14,50:2E8BFF,100:7C5CFF&height=200&section=header&text=DevRoad&fontSize=55&fontColor=ffffff&animation=fadeIn&fontAlignY=35&desc=Aprenda.%20Pratique.%20Evolua.&descAlignY=55&descSize=18" width="100%">
 </p>
 
 <p align="center">
-  <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&size=18&duration=3000&pause=800&color=00E599&center=true&vCenter=true&width=560&lines=Trilhas+de+aprendizado+estruturadas;Next.js+%2B+Prisma+%2B+PostgreSQL;Open+Source+%E2%80%A2+Em+constante+evolu%C3%A7%C3%A3o" alt="Typing SVG" />
+  <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&size=18&duration=3000&pause=800&color=2E8BFF&center=true&vCenter=true&width=560&lines=Trilhas+de+aprendizado+estruturadas;Next.js+%2B+Prisma+%2B+PostgreSQL;Open+Source+%E2%80%A2+Em+constante+evolu%C3%A7%C3%A3o" alt="Typing SVG" />
 </p>
 
 <p align="center">
@@ -20,16 +20,15 @@
 
 <p align="center">
 
-![Next.js](https://img.shields.io/badge/Next.js-15-black?logo=next.js)
+![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=next.js)
 ![React](https://img.shields.io/badge/React-19-61DAFB?logo=react)
-![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript)
+![JavaScript](https://img.shields.io/badge/JavaScript-JSX-F7DF1E?logo=javascript&logoColor=black)
 ![Node.js](https://img.shields.io/badge/Node.js-22-339933?logo=node.js)
-![NextAuth.js](https://img.shields.io/badge/NextAuth.js-v5-7C3AED?logo=auth0&logoColor=white)
-![PostgreSQL](https://img.shields.io/badge/PostgreSQL-17-4169E1?logo=postgresql)
-![Neon](https://img.shields.io/badge/Neon-Serverless_Postgres-00E599?logo=postgresql&logoColor=white)
+![NextAuth.js](https://img.shields.io/badge/Auth.js-v5-2E8BFF?logo=auth0&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?logo=postgresql)
+![Neon](https://img.shields.io/badge/Neon-Serverless_Postgres-7C5CFF?logo=postgresql&logoColor=white)
 ![Prisma](https://img.shields.io/badge/Prisma-ORM_v7-2D3748?logo=prisma)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4-06B6D4?logo=tailwindcss)
-![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker&logoColor=white)
 
 </p>
 
@@ -41,28 +40,23 @@
 
 # 📖 Sobre o Projeto
 
-O **DevRoad** é uma plataforma **Open Source** que organiza o aprendizado de programação por meio de trilhas estruturadas, reunindo vídeos gratuitos do YouTube, documentações oficiais, exercícios e projetos práticos em um único lugar.
+O **DevRoad** é uma plataforma **Open Source** que organiza o aprendizado de programação por meio de trilhas estruturadas (roadmaps), reunindo vídeos gratuitos do YouTube, documentações oficiais, exercícios e projetos práticos em um único lugar — do zero ao avançado, para qualquer pessoa que queira entrar ou evoluir na área de tecnologia.
 
-A proposta é oferecer um caminho de aprendizado claro, organizado e acessível para qualquer pessoa que queira entrar ou evoluir na área de tecnologia.
-
-> **🚧 Este projeto está em desenvolvimento e evoluirá junto com a minha jornada de estudos.**
+> **🚧 Este projeto está em desenvolvimento ativo e evolui continuamente.**
 >
-> O DevRoad não é apenas um projeto de portfólio. Ele também representa minha evolução como desenvolvedor. À medida que eu aprender novas tecnologias, boas práticas e arquiteturas modernas, o projeto será continuamente aprimorado com novas funcionalidades, melhorias de desempenho e uma base de código cada vez mais sólida.
->
-> Meu objetivo é construir uma plataforma realmente útil para a comunidade enquanto desenvolvo minhas habilidades em desenvolvimento Full Stack.
+> O DevRoad não é apenas um projeto de portfólio. Ele também representa a evolução do autor como desenvolvedor: à medida que novas tecnologias e boas práticas são aprendidas, o projeto é aprimorado com novas funcionalidades e uma base de código cada vez mais sólida.
 
 ---
 
 # ✨ Objetivos
 
-* 📚 Organizar conteúdos gratuitos em uma sequência lógica.
+* 📚 Organizar conteúdos gratuitos em uma sequência lógica (roadmaps).
 * 🎥 Centralizar vídeos gratuitos do YouTube.
-* 📖 Disponibilizar documentações oficiais.
-* 💻 Sugerir projetos práticos.
+* 📖 Disponibilizar documentações oficiais como material de apoio.
+* 💻 Sugerir projetos práticos ao final de cada trilha.
 * 📝 Criar exercícios para fixação.
-* 📈 Permitir acompanhamento do progresso.
-* 🌍 Tornar o projeto totalmente Open Source.
-* 🚀 Evoluir continuamente junto com meus estudos.
+* 📈 Permitir acompanhamento de progresso por aula.
+* 🌍 Manter o projeto 100% Open Source, sob licença MIT.
 
 ---
 
@@ -70,68 +64,204 @@ A proposta é oferecer um caminho de aprendizado claro, organizado e acessível 
 
 ## Front-end
 
-* Next.js 15
+* Next.js 16 (App Router, Turbopack)
 * React 19
-* TypeScript
-* Tailwind CSS
-* Motion
-* shadcn/ui
+* JavaScript / JSX (sem TypeScript no código da aplicação)
+* Tailwind CSS 4
+* Fontes: Space Grotesk, Inter e JetBrains Mono
 
 ## Back-end
 
 * Node.js
-* Prisma ORM v7 (com Driver Adapter `@prisma/adapter-pg`)
-* NextAuth.js v5 (Auth.js) — autenticação por credenciais
-* bcryptjs — hashing de senhas
-* PostgreSQL 17
-* Docker / Docker Compose
+* Prisma ORM v7, com `prisma.config.ts` para configuração de conexão e Driver Adapter (`@prisma/adapter-pg`)
+* Auth.js (NextAuth.js v5) para autenticação
+* PostgreSQL
 
 ## Banco de Dados
 
-* PostgreSQL 17
-* Neon (Postgres serverless — ambiente de produção)
-* Prisma Migrations
-* Prisma Client
+* PostgreSQL
+* Neon (Postgres serverless — ambiente de produção), com `DATABASE_URL` configurada
+* Prisma Client (`src/lib/prisma.js`)
+
+## Identidade Visual
+
+* Tema escuro: `#0A0D14` · `#10141D` · `#1E2430`
+* Azul `#2E8BFF` e roxo `#7C5CFF`
+* Slogan: **"Aprenda · Pratique · Evolua"**
 
 ## Ferramentas
 
 * Git / GitHub
 * Vercel
-* Docker Desktop
-* Figma
-* VS Code
 
 ---
 
-# 🔒 Segurança e Cadastro de Usuários
+# 🔑 Autenticação
 
-* **Criptografia de senhas**: todas as senhas passam por hashing com `bcryptjs` (10 salt rounds) antes de serem persistidas no banco — a senha em texto puro nunca é armazenada.
-* **Foto de perfil em Base64**: upload de imagem convertido em Base64 em tempo real, com preview circular instantâneo, sem depender de serviços externos de armazenamento de imagem.
-* **Proteção contra estouro de caracteres**: validação e truncamento (`substring`) de campos de texto no back-end, prevenindo erros como o `P2000` do Prisma ao inserir valores maiores que o limite da coluna.
+* Estrutura de **login** (`/login`) e **cadastro** (`/cadastro`) já implementada.
+* Páginas de aula protegidas: cada página verifica a sessão diretamente no servidor e redireciona para `/login` quando necessário.
 
----
+```js
+import { auth } from "@/auth";
 
-# 🔑 Autenticação e Gestão de Sessões (NextAuth.js v5)
+const session = await auth();
 
-* **Login por credenciais**: formulário integrado ao banco de dados — o e-mail é buscado no Postgres (Neon) e a senha validada com `bcrypt.compare`.
-* **Sessões leves**: dados pesados (como a foto do usuário) foram removidos do cookie de sessão, evitando o erro `494` (header muito grande) e mantendo a autenticação estável em produção na Vercel.
-* **Rota de avatar dedicada** (`/api/user/avatar`): endpoint que busca a imagem do usuário logado sob demanda direto no banco, permitindo que o `<Header />` exiba o avatar (ou a inicial do nome) sem sobrecarregar o cookie.
-* **Proteção de rotas com Middleware**: `middleware.js` compatível com o Edge Runtime da Vercel, impedindo que um usuário autenticado retorne às telas de login/cadastro pelo histórico do navegador.
+if (!session?.user) {
+  redirect("/login");
+}
+```
 
----
-
-# 🗄️ Banco de Dados e Infraestrutura
-
-* **Rede interna no Docker**: ajuste no `docker-compose.yml` e no `.env`, trocando `BD_HOST=localhost` por `postgres` (nome do serviço), permitindo a comunicação correta entre os containers locais.
-* **Banco de produção na nuvem (Neon)**: estrutura completa de tabelas (`User`, `Tecnologias`, `Modulos`, `Aulas`, `Progresso`, `Favoritos`) provisionada no PostgreSQL 17 gratuito da [Neon.tech](https://neon.tech).
-* **Prisma v7 + Driver Adapter**: uso do `@prisma/adapter-pg` com o driver `pg` nativo, garantindo compatibilidade total com ambientes serverless (Vercel Functions).
+* **Planejado:** login social via Google, GitHub e Microsoft (ainda não concluído — só estruturado como próximo passo da autenticação).
 
 ---
 
-# 🌐 SEO e Indexação
+# 🗄️ Banco de Dados
 
-* **Sitemap dinâmico** (`sitemap.js`): geração automática das rotas públicas (Home, páginas de autenticação e trilhas de tecnologias), validado no Google Search Console.
-* **Políticas de rastreamento** (`robots.js`): liberação total de indexação para o Google, com bloqueio específico das rotas internas de API.
+Estrutura de tabelas já criada no Neon via Prisma:
+
+* `User`
+* `Tecnologias`
+* `Modulos`
+* `Aulas`
+* `Progresso`
+* `Favoritos`
+
+Relacionamentos:
+
+```
+Tecnologia
+   ↓
+Módulos
+   ↓
+Aulas
+   ↓
+Progresso
+```
+
+```
+Usuário
+ ├── Progresso
+ └── Favoritos
+```
+
+---
+
+# 🗺️ Roadmaps
+
+Já implementados:
+
+* `/roadmaps` — lista de roadmaps disponíveis
+* `/roadmaps/html-css`
+* `/roadmaps/javascript`
+* `/roadmaps/python`
+
+## Currículo — HTML & CSS ✅
+
+8 módulos · **74 aulas**
+
+| Módulo | Aulas |
+|---|---|
+| 01 — Fundamentos da Web | 6 |
+| 02 — HTML | 12 |
+| 03 — CSS | 11 |
+| 04 — Layout com CSS | 11 |
+| 05 — Responsividade | 9 |
+| 06 — CSS Avançado | 10 |
+| 07 — Boas Práticas | 7 |
+| 08 — Projeto Prático | 8 |
+
+## Currículo — Python ✅
+
+8 módulos · **90 aulas**
+
+| Módulo | Aulas |
+|---|---|
+| 01 — Fundamentos de Python | 10 |
+| 02 — Estruturas de Controle | 10 |
+| 03 — Estruturas de Dados | 12 |
+| 04 — Funções e Modularização | 12 |
+| 05 — Programação Orientada a Objetos | 12 |
+| 06 — Arquivos e Exceções | 12 |
+| 07 — Bibliotecas e APIs | 12 |
+| 08 — Projeto Final | 10 |
+
+## Currículo — JavaScript ⚠️
+
+8 módulos definidos (Fundamentos, Estruturas de Controle, Arrays e Objetos, Funções, JavaScript no Navegador, JavaScript Moderno, Assincronismo e APIs, Node.js e Projeto Final).
+
+> **Pendente de revisão:** o total de aulas varia dependendo da versão do script de seed usada. Não há um número fechado confirmado ainda — precisa ser conferido direto no banco antes de ser considerado concluído.
+
+---
+
+# 🎓 Sistema de Aulas Dinâmicas
+
+Em vez de páginas manuais por aula, o DevRoad usa rotas dinâmicas:
+
+```
+/aulas/html-css/[modulo]/[aula]
+/aulas/javascript/[modulo]/[aula]
+/aulas/python/[modulo]/[aula]
+```
+
+A página busca a aula diretamente do PostgreSQL via Prisma, resolvendo a cadeia **tecnologia → módulo → aula**.
+
+### Navegação entre aulas
+
+* Aula anterior / próxima aula, restrita ao módulo atual (não pula automaticamente pro próximo módulo).
+* Na última aula do módulo: botão "Voltar para o roadmap" no lugar de "Próxima aula".
+* Sidebar com a lista completa de aulas do módulo.
+
+### Vídeos do YouTube
+
+* Campos `youtube_url` e `youtube_canal` no modelo de aula.
+* Extração automática do ID de `youtube.com/watch?v=...` e `youtu.be/...`, convertido em embed.
+* Quando `youtube_url` é `null`, a aula não trava — mostra **"📚 Vídeo não disponível"** e direciona pra documentação.
+
+### Documentação
+
+* Campo `documentacao_url`, usado como material de apoio (documentação oficial, W3Schools, etc.) quando não há vídeo.
+
+### Estrutura de uma aula
+
+Título · Descrição · Vídeo · Canal do YouTube · Documentação · Exercício · Projeto · Ordem · Tempo estimado.
+
+### Página visual da aula
+
+Breadcrumb, título, descrição, vídeo, canal, conteúdo, exercício, projeto, documentação, sidebar e navegação anterior/próxima — com CSS responsivo.
+
+---
+
+# 💻 Projetos Práticos
+
+Três projetos finais já definidos:
+
+### HTML/CSS — Landing Page Responsiva
+HTML semântico, header, navegação, hero, CTA, cards, seção de serviços, formulário, footer, Flexbox, Grid, responsividade, acessibilidade.
+**Extras:** animações, menu mobile, dark mode, deploy.
+
+### JavaScript — Task Manager
+CRUD (criação, edição, exclusão, conclusão), filtros, busca, validação, DOM, eventos, Arrays, Objetos, LocalStorage, Async/Await, consumo de API, tratamento de erros.
+**Extras:** dark mode, drag & drop, filtros avançados, paginação, ES Modules, deploy.
+
+### Python — Gerenciador de Dados
+CRUD, validação, tratamento de erros, funções, listas, dicionários, POO, módulos, JSON.
+**Extras:** SQLite, camada de acesso a dados, autenticação simples, relatórios, testes, GUI.
+
+Rotas já planejadas:
+```
+/projetos/html-css
+/projetos/javascript
+/projetos/python
+```
+
+---
+
+# ⚙️ Problemas já resolvidos
+
+* **Prisma 7:** migração da configuração de conexão para `prisma.config.ts`, em vez de depender de `url = env("DATABASE_URL")` direto no `schema.prisma`.
+* **PostgreSQL/Neon:** Driver Adapter configurado em `src/lib/prisma.js`.
+* **Rotas duplicadas:** identificado e corrigido conflito de `Duplicate page detected` causado por `route.js` e `route.ts` coexistindo na mesma rota de autenticação.
+* **Conteúdo do banco:** correções de aulas duplicadas, transações, SQL incompatível, URLs e do campo `youtube_canal`, populados diretamente via Neon SQL Editor.
 
 ---
 
@@ -139,92 +269,32 @@ A proposta é oferecer um caminho de aprendizado claro, organizado e acessível 
 
 ## Pré-requisitos
 
-Antes de iniciar o projeto, tenha instalado:
-
 * Node.js 22+
-* Docker Desktop
 * Git
+* Uma instância PostgreSQL (local ou Neon)
 
 ## Instalação
 
-Clone o repositório:
-
 ```bash
 git clone https://github.com/MeirelesDiogo/DevRoad.git
-```
-
-Entre na pasta do projeto:
-
-```bash
 cd DevRoad
-```
-
-Instale as dependências:
-
-```bash
 npm install
 ```
 
-## Banco de Dados
+## Variáveis de Ambiente
 
-O DevRoad utiliza PostgreSQL executado através de um container Docker em ambiente local, e Neon (Postgres serverless) em produção.
-
-Para iniciar o banco de dados local:
-
-```bash
-docker compose up -d
-```
-
-O PostgreSQL local ficará disponível em:
-
-```
-localhost:5432
-```
-
-## Configuração das Variáveis de Ambiente
-
-Crie um arquivo `.env` na raiz do projeto:
+Crie um `.env` na raiz do projeto:
 
 ```env
-# Banco de dados
-BD_USER=postgres
-BD_PASSWORD=postgres
-BD_PORT=5432
-BD_HOST=postgres
-BD_NAME=DevRoad
-
-# NextAuth.js
+DATABASE_URL="sua_connection_string_do_neon"
 AUTH_SECRET=sua_chave_secreta
 ```
 
-> Em ambiente Docker, `BD_HOST` deve ser o nome do serviço (`postgres`) definido no `docker-compose.yml`, não `localhost`.
-
-## Prisma ORM
-
-O projeto utiliza o Prisma como ORM para comunicação com o banco de dados, com Driver Adapter (`@prisma/adapter-pg`) para total compatibilidade com ambientes serverless.
-
-Principais recursos utilizados:
-
-* Modelagem do banco através do Prisma Schema
-* Controle de migrations
-* Geração do Prisma Client
-* Integração com PostgreSQL (local via Docker e produção via Neon)
-
-Executar migrations:
-
-```bash
-npx prisma migrate dev
-```
-
-Gerar Prisma Client:
+## Prisma
 
 ```bash
 npx prisma generate
-```
-
-Abrir o Prisma Studio:
-
-```bash
+npx prisma migrate dev
 npx prisma studio
 ```
 
@@ -233,16 +303,14 @@ npx prisma studio
 # 🏗️ Arquitetura Atual
 
 ```
-Next.js 15
+Next.js 16 (App Router, Turbopack)
   │
   ├── React 19
-  ├── TypeScript
-  ├── NextAuth.js v5 (Autenticação + Middleware)
-  ├── bcryptjs (Hash de senhas)
-  ├── Prisma ORM v7 (+ @prisma/adapter-pg)
+  ├── JavaScript / JSX
+  ├── Auth.js v5 (Autenticação)
+  ├── Prisma ORM v7 (+ Driver Adapter @prisma/adapter-pg)
   │
-  └── PostgreSQL 17
-        ├── Docker Container (ambiente local)
+  └── PostgreSQL
         └── Neon (ambiente de produção)
 ```
 
@@ -252,34 +320,33 @@ Next.js 15
 
 ### Plataforma
 
-* [x] Cadastro de usuários (com hash de senha e foto em Base64)
-* [x] Login por credenciais (NextAuth.js v5)
-* [x] Proteção de rotas autenticadas via Middleware
-* [x] Rota dedicada de avatar do usuário
-* [ ] Login social (OAuth)
+* [x] Estrutura de cadastro de usuários (`/cadastro`)
+* [x] Estrutura de login (`/login`)
+* [x] Proteção de páginas de aula via `auth()` + redirecionamento
+* [ ] Login social (Google, GitHub, Microsoft)
 * [ ] Perfil do usuário
-* [ ] Configurações
+* [ ] Favoritos (modelo pronto no banco, funcionalidade ainda não implementada)
 
 ### Aprendizado
 
-* [ ] Catálogo de tecnologias
-* [ ] Trilhas de aprendizado
-* [ ] Lista de aulas
-* [ ] Integração com vídeos do YouTube
-* [ ] Links para documentações oficiais
-* [ ] Exercícios
-* [ ] Projetos práticos
-* [ ] Controle de progresso
-* [ ] Favoritos
-* [ ] Histórico de estudos
+* [x] Listagem de roadmaps (`/roadmaps`)
+* [x] Páginas de tecnologia: HTML/CSS, JavaScript, Python
+* [x] Sistema de aulas dinâmicas (`/aulas/[tecnologia]/[modulo]/[aula]`)
+* [x] Integração com vídeos do YouTube (com fallback pra aulas sem vídeo)
+* [x] Links para documentação oficial
+* [x] Navegação entre aulas (anterior/próxima, restrita ao módulo)
+* [x] Currículo de HTML/CSS completo (74 aulas)
+* [x] Currículo de Python completo (90 aulas)
+* [ ] Currículo de JavaScript — revisão do total de aulas pendente
+* [x] Projetos práticos definidos (HTML/CSS, JavaScript, Python)
+* [ ] Páginas de projeto (`/projetos/[tecnologia]`) implementadas
+* [ ] Controle de progresso (modelo pronto, funcionalidade de marcar aula como concluída ainda pendente)
 
 ### Futuras Funcionalidades
 
 * [ ] Sistema de conquistas
 * [ ] Certificados
-* [ ] Comentários
-* [ ] Avaliações
-* [ ] IA para recomendações de estudo
+* [ ] Comentários e avaliações
 * [ ] Dashboard de progresso
 * [ ] Gamificação
 
@@ -288,49 +355,34 @@ Next.js 15
 # 🗺️ Roadmap de Desenvolvimento
 
 ## Planejamento
-
-* [x] Definição da ideia
-* [x] Definição das funcionalidades
-* [x] Escolha da stack
+* [x] Definição da ideia, funcionalidades e stack
 * [x] Planejamento do banco de dados
 
-## Design
-
-* [ ] Wireframes
-* [ ] Protótipo no Figma
-* [ ] Design System
-* [ ] Componentes reutilizáveis
-
 ## Front-end
-
 * [x] Estrutura inicial
-* [x] Login
-* [x] Cadastro
-* [ ] Página Inicial
-* [ ] Página das Tecnologias
-* [ ] Página da Tecnologia
-* [ ] Página das Aulas
-* [ ] Perfil
+* [x] Login e Cadastro (estrutura)
+* [x] Roadmaps e páginas de tecnologia
+* [x] Sistema de aulas dinâmicas
+* [ ] Perfil do usuário
+* [ ] Páginas de projetos práticos
 
 ## Back-end
-
 * [x] Banco de Dados (PostgreSQL + Neon)
 * [x] Prisma ORM (v7 + Driver Adapter)
-* [x] Autenticação (NextAuth.js v5 + bcryptjs)
-* [x] Proteção de rotas (Middleware)
-* [ ] API REST completa (aulas, trilhas, progresso)
-* [ ] Sistema de progresso
+* [x] Estrutura de autenticação (Auth.js v5)
+* [x] Proteção de páginas de aula
+* [ ] Login social (OAuth)
+* [ ] Sistema de progresso funcional
+* [ ] Sistema de favoritos funcional
 
-## SEO
-
-* [x] Sitemap dinâmico
-* [x] Robots.txt configurado
-* [ ] Metadados otimizados por página
-* [ ] Open Graph / compartilhamento social
+## Conteúdo
+* [x] Currículo de HTML/CSS (74 aulas)
+* [x] Currículo de Python (90 aulas)
+* [ ] Currículo de JavaScript (revisão pendente)
+* [x] 3 projetos práticos definidos
 
 ## Deploy
-
-* [x] Deploy Front-end (Vercel)
+* [x] Deploy do front-end (Vercel — `dev-road-henna.vercel.app`)
 * [x] Banco em produção (Neon)
 * [ ] Lançamento da versão 1.0
 
@@ -338,82 +390,68 @@ Next.js 15
 
 ## 📂 Estrutura de Páginas
 
-Abaixo está a estrutura inicial planejada para as rotas do DevRoad. Ela poderá evoluir conforme novas funcionalidades forem adicionadas ao projeto.
-
 ```text
 src/
 └── app/
     │
-    ├── page.tsx                      # Home
-    ├── layout.tsx                    # Layout global
+    ├── page.jsx                      # Home
+    ├── layout.jsx                    # Layout global
     ├── globals.css                   # Estilos globais
-    ├── sitemap.js                    # Sitemap dinâmico
-    ├── robots.js                     # Políticas de indexação
     │
     ├── login/
-    │   └── page.tsx
+    │   └── page.jsx
     │
     ├── cadastro/
-    │   └── page.tsx
-    │
-    ├── tecnologias/
-    │   ├── page.tsx                  # Lista de tecnologias
-    │   └── [slug]/
-    │       └── page.tsx              # Página da tecnologia
-    │
-    ├── aulas/
-    │   └── [id]/
-    │       └── page.tsx              # Aula específica
+    │   └── page.jsx
     │
     ├── roadmaps/
-    │   ├── page.tsx                  # Lista de roadmaps
-    │   └── [slug]/
-    │       └── page.tsx              # Roadmap específico
+    │   ├── page.jsx                  # Lista de roadmaps
+    │   ├── html-css/
+    │   │   └── page.jsx
+    │   ├── javascript/
+    │   │   └── page.jsx
+    │   └── python/
+    │       └── page.jsx
+    │
+    ├── aulas/
+    │   ├── html-css/[modulo]/[aula]/
+    │   │   └── page.jsx
+    │   ├── javascript/[modulo]/[aula]/
+    │   │   └── page.jsx
+    │   └── python/[modulo]/[aula]/
+    │       └── page.jsx
+    │
+    ├── projetos/
+    │   ├── html-css/
+    │   ├── javascript/
+    │   └── python/
     │
     ├── perfil/
-    │   ├── page.tsx
-    │   ├── configuracoes/
-    │   │   └── page.tsx
-    │   └── favoritos/
-    │       └── page.tsx
-    │
-    ├── sobre/
-    │   └── page.tsx
-    │
-    ├── contato/
-    │   └── page.tsx
+    │   └── page.jsx
     │
     ├── api/
-    │   └── user/
-    │       └── avatar/
-    │           └── route.ts          # Rota dedicada de avatar
+    │   └── auth/
+    │       └── [...nextauth]/
+    │           └── route.js
     │
-    ├── middleware.js                 # Proteção de rotas autenticadas
-    │
-    └── not-found.tsx
+    └── not-found.jsx
 ```
 
 ### 📄 Páginas Planejadas
 
-| Página                  | Descrição                                            |
-| ------------------------ | ----------------------------------------------------- |
-| `/`                      | Página inicial da plataforma.                          |
-| `/login`                 | Login do usuário.                                       |
-| `/cadastro`              | Cadastro de novos usuários.                             |
-| `/tecnologias`           | Catálogo de tecnologias disponíveis.                    |
-| `/tecnologias/[slug]`    | Informações e trilha de uma tecnologia específica.      |
-| `/roadmaps`              | Lista de todos os roadmaps disponíveis.                 |
-| `/roadmaps/[slug]`       | Roadmap completo de uma tecnologia.                     |
-| `/aulas/[id]`            | Página da aula com vídeo, documentação e exercícios.    |
-| `/perfil`                | Perfil do usuário.                                      |
-| `/perfil/configuracoes`  | Configurações da conta.                                 |
-| `/perfil/favoritos`      | Tecnologias e aulas favoritas.                          |
-| `/sobre`                 | Informações sobre o projeto DevRoad.                    |
-| `/contato`               | Contato e formas de contribuição.                       |
-| `/api/user/avatar`       | Endpoint que retorna o avatar do usuário autenticado.   |
-| `404`                    | Página personalizada para rotas inexistentes.           |
+| Página | Descrição |
+|---|---|
+| `/` | Página inicial da plataforma |
+| `/login` | Login do usuário |
+| `/cadastro` | Cadastro de novos usuários |
+| `/roadmaps` | Lista de todos os roadmaps disponíveis |
+| `/roadmaps/[tecnologia]` | Roadmap completo de uma tecnologia |
+| `/aulas/[tecnologia]/[modulo]/[aula]` | Página da aula com vídeo, documentação e exercícios |
+| `/projetos/[tecnologia]` | Projeto prático final da trilha |
+| `/perfil` | Perfil do usuário |
+| `404` | Página personalizada para rotas inexistentes |
 
-> **Observação:** Esta estrutura representa o planejamento do projeto e poderá sofrer alterações conforme o desenvolvimento e a evolução do DevRoad.
+> **Observação:** esta estrutura reflete o estado atual do desenvolvimento e pode evoluir conforme novas funcionalidades forem adicionadas.
 
 ---
 
@@ -421,36 +459,26 @@ src/
 
 Contribuições são sempre bem-vindas.
 
-Caso tenha alguma ideia, sugestão ou queira colaborar com o projeto:
-
 1. Faça um Fork.
-2. Crie uma Branch.
-
+2. Crie uma Branch:
 ```bash
 git checkout -b feature/minha-feature
 ```
-
-3. Faça suas alterações.
-
-4. Commit.
-
+3. Faça suas alterações e commit:
 ```bash
 git commit -m "feat: adiciona nova funcionalidade"
 ```
-
-5. Envie para o GitHub.
-
+4. Envie para o GitHub:
 ```bash
 git push origin feature/minha-feature
 ```
-
-6. Abra um Pull Request.
+5. Abra um Pull Request.
 
 ---
 
 # 📄 Licença
 
-Este projeto será distribuído sob a licença **MIT**.
+Este projeto é distribuído sob a licença **MIT**.
 
 ---
 
@@ -464,9 +492,7 @@ GitHub: [MeirelesDiogo](https://github.com/MeirelesDiogo)
 
 # ⭐ Apoie o Projeto
 
-Se este projeto chamou sua atenção ou te ajudou de alguma forma, deixe uma ⭐ no repositório.
-
-Isso incentiva o desenvolvimento contínuo do DevRoad e ajuda outras pessoas a descobrirem o projeto.
+Se este projeto chamou sua atenção ou te ajudou de alguma forma, deixe uma ⭐ no repositório — isso incentiva o desenvolvimento contínuo do DevRoad.
 
 ---
 
@@ -476,8 +502,6 @@ Acreditamos que aprender programação deve ser um processo acessível, organiza
 
 O DevRoad nasceu para transformar centenas de conteúdos espalhados pela internet em uma jornada clara de aprendizado, permitindo que qualquer pessoa evolua de forma consistente.
 
-Mais do que um projeto de portfólio, o DevRoad representa uma evolução constante. Cada nova funcionalidade desenvolvida refletirá um novo conhecimento adquirido, tornando o projeto um registro público da minha trajetória como desenvolvedor e, ao mesmo tempo, uma ferramenta útil para toda a comunidade.
-
 ---
 
 <p align="center">
@@ -485,5 +509,5 @@ Mais do que um projeto de portfólio, o DevRoad representa uma evolução consta
 </p>
 
 <p align="center">
-  <img src="https://capsule-render.vercel.app/api?type=waving&color=0:4169E1,50:00E599,100:0D1117&height=120&section=footer" width="100%">
+  <img src="https://capsule-render.vercel.app/api?type=waving&color=0:7C5CFF,50:2E8BFF,100:0A0D14&height=120&section=footer" width="100%">
 </p>
