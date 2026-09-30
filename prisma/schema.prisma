@@ -41,7 +41,11 @@ model Modulo {
   descricao    String?
   ordem        Int
 
-  tecnologia Tecnologias @relation(fields: [tecnologiaId], references: [id_tecnologia], onDelete: Cascade)
+  tecnologia Tecnologias @relation(
+    fields: [tecnologiaId],
+    references: [id],
+    onDelete: Cascade
+  )
 
   aulas Aula[]
 
@@ -66,7 +70,11 @@ model Aula {
   ordem           Int
   tempoEstimado   Int?     @map("tempo_estimado")
 
-  modulo Modulo @relation(fields: [moduloId], references: [id_modulo], onDelete: Cascade)
+  modulo Modulo @relation(
+    fields: [moduloId],
+    references: [id],
+    onDelete: Cascade
+  )
 
   progresso Progresso[]
 
@@ -82,9 +90,17 @@ model Progresso {
   concluido     Boolean   @default(false)
   dataConclusao DateTime? @map("data_conclusao")
 
-  user User @relation(fields: [userId], references: [id_user], onDelete: Cascade)
+  user User @relation(
+    fields: [userId],
+    references: [id],
+    onDelete: Cascade
+  )
 
-  aula Aula @relation(fields: [aulaId], references: [id_aula], onDelete: Cascade)
+  aula Aula @relation(
+    fields: [aulaId],
+    references: [id],
+    onDelete: Cascade
+  )
 
   @@unique([userId, aulaId])
 
@@ -96,9 +112,17 @@ model Favoritos {
   userId       Int @map("id_user")
   tecnologiaId Int @map("id_tecnologia")
 
-  user User @relation(fields: [userId], references: [id_user], onDelete: Cascade)
+  user User @relation(
+    fields: [userId],
+    references: [id],
+    onDelete: Cascade
+  )
 
-  tecnologia Tecnologias @relation(fields: [tecnologiaId], references: [id_tecnologia], onDelete: Cascade)
+  tecnologia Tecnologias @relation(
+    fields: [tecnologiaId],
+    references: [id],
+    onDelete: Cascade
+  )
 
   @@unique([userId, tecnologiaId])
 
