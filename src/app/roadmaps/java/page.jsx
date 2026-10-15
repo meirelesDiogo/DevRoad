@@ -214,7 +214,7 @@ export default async function JavaRoadmap() {
 
         <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-2xl border border-[var(--border)] bg-[var(--surface)]">
           <img
-            src="/public/icons/back/java.svg"
+            src="/icons/back/java.svg"
             alt="Java"
             width={38}
             height={38}
