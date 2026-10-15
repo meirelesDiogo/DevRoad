@@ -1,3 +1,4 @@
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -35,17 +36,13 @@ model Tecnologias {
 }
 
 model Modulo {
-  id           Int         @id @default(autoincrement()) @map("id_modulo")
-  tecnologiaId Int         @map("id_tecnologia")
-  titulo       String      @db.VarChar(150)
+  id           Int     @id @default(autoincrement()) @map("id_modulo")
+  tecnologiaId Int     @map("id_tecnologia")
+  titulo       String  @db.VarChar(150)
   descricao    String?
   ordem        Int
 
-  tecnologia Tecnologias @relation(
-    fields: [tecnologiaId],
-    references: [id_tecnologia],
-    onDelete: Cascade
-  )
+  tecnologia Tecnologias @relation(fields: [tecnologiaId], references: [id_tecnologia], onDelete: Cascade)
 
   aulas Aula[]
 
@@ -60,20 +57,16 @@ model Aula {
   titulo          String   @db.VarChar(150)
   descricao       String?
 
-  youtubeUrl      String? @map("youtube_url") @db.VarChar(500)
-  youtubeCanal    String? @map("youtube_canal") @db.VarChar(150)
-  documentacaoUrl String? @map("documentacao_url") @db.VarChar(500)
+  youtubeUrl      String?  @map("youtube_url") @db.VarChar(500)
+  youtubeCanal    String?  @map("youtube_canal") @db.VarChar(150)
+  documentacaoUrl String?  @map("documentacao_url") @db.VarChar(500)
 
   projeto       String?
   exercicio     String?
   ordem         Int
   tempoEstimado Int? @map("tempo_estimado")
 
-  modulo Modulo @relation(
-    fields: [moduloId],
-    references: [id_modulo],
-    onDelete: Cascade
-  )
+  modulo Modulo @relation(fields: [moduloId], references: [id_modulo], onDelete: Cascade)
 
   progresso Progresso[]
 
@@ -89,17 +82,8 @@ model Progresso {
   concluido     Boolean   @default(false)
   dataConclusao DateTime? @map("data_conclusao")
 
-  user User @relation(
-    fields: [userId],
-    references: [id_user],
-    onDelete: Cascade
-  )
-
-  aula Aula @relation(
-    fields: [aulaId],
-    references: [id_aula],
-    onDelete: Cascade
-  )
+  user User @relation(fields: [userId], references: [id_user], onDelete: Cascade)
+  aula Aula @relation(fields: [aulaId], references: [id_aula], onDelete: Cascade)
 
   @@unique([userId, aulaId])
 
@@ -111,17 +95,8 @@ model Favoritos {
   userId       Int @map("id_user")
   tecnologiaId Int @map("id_tecnologia")
 
-  user User @relation(
-    fields: [userId],
-    references: [id_user],
-    onDelete: Cascade
-  )
-
-  tecnologia Tecnologias @relation(
-    fields: [tecnologiaId],
-    references: [id_tecnologia],
-    onDelete: Cascade
-  )
+  user       User        @relation(fields: [userId], references: [id_user], onDelete: Cascade)
+  tecnologia Tecnologias @relation(fields: [tecnologiaId], references: [id_tecnologia], onDelete: Cascade)
 
   @@unique([userId, tecnologiaId])
 
