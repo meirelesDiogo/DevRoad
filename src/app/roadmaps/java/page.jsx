@@ -374,7 +374,7 @@ export default async function JavaRoadmap() {
                   <Link
                     href={
                       isAuthenticated
-                        ? `/aulas/java/${etapa.etapa}/01`
+                        ? `/aulas/java/${etapa.etapa}`
                         : "/login"
                     }
                     className="inline-flex items-center gap-2 rounded-lg border px-4 py-2.5 text-sm font-semibold transition-colors hover:bg-[var(--surface-2)]"
