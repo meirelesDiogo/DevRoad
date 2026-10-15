@@ -228,18 +228,20 @@ const videoEmbedUrl = gerarEmbedUrl(aulaData.youtubeUrl);
               )}
             </section>
 
-            {/* Vídeo */}
-            <div className="w-full overflow-hidden rounded-xl aspect-video min-h-[300px]">
+           {/* Vídeo */}
+<div className="mb-6 w-full overflow-hidden rounded-xl border border-[#1E2430] bg-[#10141D]">
   {videoEmbedUrl ? (
-    <iframe
-      src={videoEmbedUrl}
-      title={`Vídeo: ${aulaData.titulo}`}
-      className="w-full h-full min-h-[300px]"
-      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-      allowFullScreen
-    />
+    <div className="aspect-video w-full">
+      <iframe
+        src={videoEmbedUrl}
+        title={`Vídeo: ${aulaData.titulo}`}
+        className="h-full w-full"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        allowFullScreen
+      />
+    </div>
   ) : (
-    <div className="flex h-full min-h-[300px] items-center justify-center text-gray-400">
+    <div className="flex aspect-video w-full items-center justify-center text-gray-400">
       Vídeo ainda não disponível para esta aula.
     </div>
   )}
