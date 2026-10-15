@@ -1,255 +1,481 @@
 
 import Link from "next/link";
-import { redirect, notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 
-export async function generateMetadata({ params }) {
-  const { modulo } = await params;
-  const numero = Number(modulo);
+function extrairVideoId(url) {
+  if (!url) return null;
 
-  if (!Number.isInteger(numero) || numero < 1 || numero > 8) {
-    return { title: "Módulo não encontrado | DevRoad" };
+  try {
+    const urlObj = new URL(url);
+
+    if (urlObj.hostname.includes("youtu.be")) {
+      return urlObj.pathname.slice(1).split("/")[0] || null;
+    }
+
+    if (urlObj.hostname.includes("youtube.com")) {
+      if (urlObj.pathname === "/watch") {
+        return urlObj.searchParams.get("v");
+      }
+
+      if (
+        urlObj.pathname.startsWith("/embed/") ||
+        urlObj.pathname.startsWith("/shorts/")
+      ) {
+        return urlObj.pathname.split("/")[2] || null;
+      }
+    }
+
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+function formatarTempo(minutos) {
+  if (!minutos || minutos <= 0) return null;
+
+  const horas = Math.floor(minutos / 60);
+  const restante = minutos % 60;
+
+  if (horas === 0) return `${restante} min`;
+  if (restante === 0) return `${horas}h`;
+
+  return `${horas}h ${restante}min`;
+}
+
+export async function generateMetadata({ params }) {
+  const { modulo, aula } = await params;
+
+  const moduloNumero = Number(modulo);
+  const aulaNumero = Number(aula);
+
+  if (
+    !Number.isInteger(moduloNumero) ||
+    !Number.isInteger(aulaNumero) ||
+    moduloNumero < 1 ||
+    moduloNumero > 8 ||
+    aulaNumero < 1
+  ) {
+    return { title: "Aula não encontrada | DevRoad" };
   }
 
-  const moduloData = await prisma.modulo.findFirst({
+  const aulaData = await prisma.aula.findFirst({
     where: {
-      ordem: numero,
-      tecnologia: { nome: "Java" },
+      ordem: aulaNumero,
+      modulo: {
+        ordem: moduloNumero,
+        tecnologia: {
+          nome: "Java",
+        },
+      },
     },
     select: {
       titulo: true,
-      descricao: true,
     },
   });
 
   return {
-    title: moduloData
-      ? `${moduloData.titulo} | Java | DevRoad`
-      : "Módulo não encontrado | DevRoad",
-    description: moduloData?.descricao || "Estude Java com o DevRoad.",
+    title: aulaData
+      ? `${aulaData.titulo} | Java | DevRoad`
+      : "Aula não encontrada | DevRoad",
   };
 }
 
-export default async function ModuloJavaPage({ params }) {
+export default async function AulaJavaPage({ params }) {
   const session = await auth();
 
   if (!session?.user) {
     redirect("/login");
   }
 
-  const { modulo } = await params;
-  const numero = Number(modulo);
+  const { modulo, aula } = await params;
 
-  if (!Number.isInteger(numero) || numero < 1 || numero > 8) {
+  const moduloNumero = Number(modulo);
+  const aulaNumero = Number(aula);
+
+  if (
+    !Number.isInteger(moduloNumero) ||
+    !Number.isInteger(aulaNumero) ||
+    moduloNumero < 1 ||
+    moduloNumero > 8 ||
+    aulaNumero < 1
+  ) {
     notFound();
   }
 
-  const moduloData = await prisma.modulo.findFirst({
+  const aulaData = await prisma.aula.findFirst({
     where: {
-      ordem: numero,
-      tecnologia: {
-        nome: "Java",
+      ordem: aulaNumero,
+      modulo: {
+        ordem: moduloNumero,
+        tecnologia: {
+          nome: "Java",
+        },
       },
     },
     include: {
-      tecnologia: true,
-      aulas: {
-        orderBy: {
-          ordem: "asc",
-        },
-        select: {
-          id: true,
-          titulo: true,
-          descricao: true,
-          tempoEstimado: true,
-          ordem: true,
+      modulo: {
+        include: {
+          tecnologia: true,
+          aulas: {
+            orderBy: {
+              ordem: "asc",
+            },
+            select: {
+              id: true,
+              titulo: true,
+              ordem: true,
+              tempoEstimado: true,
+            },
+          },
         },
       },
     },
   });
 
-  if (!moduloData) {
+  if (!aulaData) {
     notFound();
   }
 
-  const totalAulas = moduloData.aulas.length;
+  const aulas = aulaData.modulo.aulas;
 
-  const totalMinutos = moduloData.aulas.reduce(
-    (total, aula) => total + (aula.tempoEstimado || 0),
-    0
+  const indiceAtual = aulas.findIndex(
+    (item) => item.id === aulaData.id
   );
 
-  const formatarTempo = (minutos) => {
-    if (!minutos) return "Não informado";
+  const aulaAnterior =
+    indiceAtual > 0 ? aulas[indiceAtual - 1] : null;
 
-    const horas = Math.floor(minutos / 60);
-    const restante = minutos % 60;
+  const proximaAula =
+    indiceAtual < aulas.length - 1
+      ? aulas[indiceAtual + 1]
+      : null;
 
-    if (horas === 0) return `${restante} min`;
-    if (restante === 0) return `${horas}h`;
+  const videoId = extrairVideoId(aulaData.youtubeUrl);
 
-    return `${horas}h ${restante}min`;
-  };
+  const documentacaoUrl =
+    aulaData.documentacaoUrl || "https://www.w3schools.com/java/";
+
+  const roadmapUrl = "/roadmaps/java";
 
   return (
-    <main className="min-h-screen bg-[#0A0D14] px-5 py-10 text-[#EDF0F5] sm:px-8">
-      <div className="mx-auto max-w-[1100px]">
+    <main className="min-h-screen bg-[#0A0D14] text-[#EDF0F5]">
+      <div className="mx-auto max-w-[1500px] px-4 py-6 sm:px-6 lg:px-8">
 
-        {/* VOLTAR */}
+        {/* Breadcrumb */}
+        <nav className="mb-6 flex flex-wrap items-center gap-2 text-sm text-[#8A93A6]">
+          <Link
+            href={roadmapUrl}
+            className="transition hover:text-[#2E8BFF]"
+          >
+            Roadmap Java
+          </Link>
 
-        <Link
-          href="/roadmaps/java"
-          className="mb-10 inline-flex items-center gap-2 text-sm text-[#8A93A6] transition hover:text-white"
-        >
-          <span>←</span>
-          Voltar para o roadmap de Java
-        </Link>
+          <span>/</span>
 
-        {/* CABEÇALHO */}
+          <Link
+            href={`/aulas/java/${String(moduloNumero).padStart(2, "0")}`}
+            className="transition hover:text-[#2E8BFF]"
+          >
+            {aulaData.modulo.titulo}
+          </Link>
 
-        <header className="mb-10">
-          <div className="mb-4 flex flex-wrap items-center gap-3">
-            <span className="rounded-full border border-[#2E8BFF]/30 bg-[#2E8BFF]/10 px-3 py-1 font-mono text-xs text-[#2E8BFF]">
-              MÓDULO {String(numero).padStart(2, "0")}
-            </span>
+          <span>/</span>
 
-            <span className="text-sm text-[#5C6478]">
-              Java
-            </span>
+          <span className="text-[#EDF0F5]">
+            Aula {String(aulaNumero).padStart(2, "0")}
+          </span>
+        </nav>
+
+        <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
+
+          {/* Conteúdo principal */}
+          <div className="min-w-0">
+
+            {/* Cabeçalho da aula */}
+            <section className="mb-6">
+              <div className="mb-3 flex flex-wrap items-center gap-3">
+                <span className="rounded-full border border-[#2E8BFF]/30 bg-[#2E8BFF]/10 px-3 py-1 text-xs font-semibold text-[#2E8BFF]">
+                  JAVA
+                </span>
+
+                <span className="text-sm text-[#8A93A6]">
+                  Módulo {String(moduloNumero).padStart(2, "0")}
+                </span>
+
+                {aulaData.tempoEstimado > 0 && (
+                  <span className="text-sm text-[#8A93A6]">
+                    • {formatarTempo(aulaData.tempoEstimado)}
+                  </span>
+                )}
+              </div>
+
+              <h1 className="text-2xl font-bold leading-tight sm:text-3xl">
+                {aulaData.titulo}
+              </h1>
+
+              {aulaData.descricao && (
+                <p className="mt-3 max-w-3xl leading-relaxed text-[#8A93A6]">
+                  {aulaData.descricao}
+                </p>
+              )}
+            </section>
+
+            {/* Vídeo */}
+            <section className="mb-6 overflow-hidden rounded-2xl border border-[#1E2430] bg-[#10141D]">
+
+              {videoId ? (
+                <div className="relative aspect-video w-full bg-black">
+                  <iframe
+                    src={`https://www.youtube-nocookie.com/embed/${videoId}`}
+                    title={`Aula: ${aulaData.titulo}`}
+                    className="absolute inset-0 h-full w-full"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    allowFullScreen
+                  />
+                </div>
+              ) : (
+                <div className="flex aspect-video flex-col items-center justify-center px-6 text-center">
+                  <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl border border-[#2E8BFF]/20 bg-[#2E8BFF]/10 text-2xl text-[#2E8BFF]">
+                    ▶
+                  </div>
+
+                  <h2 className="text-lg font-semibold">
+                    Vídeo ainda não disponível
+                  </h2>
+
+                  <p className="mt-2 max-w-md text-sm leading-relaxed text-[#8A93A6]">
+                    O conteúdo em vídeo desta aula ainda não foi cadastrado.
+                    Você pode continuar estudando pela descrição e pela
+                    documentação complementar.
+                  </p>
+                </div>
+              )}
+            </section>
+
+            {/* Canal do vídeo */}
+            {aulaData.youtubeCanal && (
+              <p className="mb-6 text-sm text-[#8A93A6]">
+                Canal:{" "}
+                <span className="font-medium text-[#EDF0F5]">
+                  {aulaData.youtubeCanal}
+                </span>
+              </p>
+            )}
+
+            {/* Exercício */}
+            {aulaData.exercicio && (
+              <section className="mb-6 rounded-2xl border border-[#1E2430] bg-[#10141D] p-5 sm:p-6">
+                <div className="mb-4 flex items-center gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#7C5CFF]/10 text-lg text-[#7C5CFF]">
+                    ✎
+                  </div>
+
+                  <div>
+                    <h2 className="text-lg font-bold">
+                      Exercício prático
+                    </h2>
+
+                    <p className="text-xs text-[#8A93A6]">
+                      Coloque seus conhecimentos em prática
+                    </p>
+                  </div>
+                </div>
+
+                <div className="whitespace-pre-line text-sm leading-relaxed text-[#C1C8D5]">
+                  {aulaData.exercicio}
+                </div>
+              </section>
+            )}
+
+            {/* Projeto */}
+            {aulaData.projeto && (
+              <section className="mb-6 rounded-2xl border border-[#2E8BFF]/20 bg-[#10141D] p-5 sm:p-6">
+                <div className="mb-4 flex items-center gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#2E8BFF]/10 text-lg text-[#2E8BFF]">
+                    &lt;/&gt;
+                  </div>
+
+                  <div>
+                    <h2 className="text-lg font-bold">
+                      Projeto da aula
+                    </h2>
+
+                    <p className="text-xs text-[#8A93A6]">
+                      Desenvolva algo com o que aprendeu
+                    </p>
+                  </div>
+                </div>
+
+                <div className="whitespace-pre-line text-sm leading-relaxed text-[#C1C8D5]">
+                  {aulaData.projeto}
+                </div>
+              </section>
+            )}
+
+            {/* Documentação */}
+            <section className="mb-6 rounded-2xl border border-[#1E2430] bg-[#10141D] p-5 sm:p-6">
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                  <div className="mb-2 flex items-center gap-2">
+                    <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#2E8BFF]/10 text-lg text-[#2E8BFF]">
+                      ↗
+                    </span>
+
+                    <h2 className="text-lg font-bold">
+                      Documentação complementar
+                    </h2>
+                  </div>
+
+                  <p className="text-sm leading-relaxed text-[#8A93A6]">
+                    Aprofunde seus conhecimentos sobre este conteúdo
+                    com materiais de referência.
+                  </p>
+                </div>
+
+                <a
+                  href={documentacaoUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex shrink-0 items-center justify-center gap-2 rounded-lg bg-[#2E8BFF] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#1976E8]"
+                >
+                  Acessar documentação
+                  <span>↗</span>
+                </a>
+              </div>
+
+              <p className="mt-4 border-t border-[#1E2430] pt-3 text-xs text-[#8A93A6]">
+                Material externo para complementar seus estudos.
+              </p>
+            </section>
+
+            {/* Navegação entre aulas */}
+            <div className="flex flex-wrap items-center justify-between gap-3 border-t border-[#1E2430] pt-6">
+
+              {aulaAnterior ? (
+                <Link
+                  href={`/aulas/java/${String(moduloNumero).padStart(2, "0")}/${String(aulaAnterior.ordem).padStart(2, "0")}`}
+                  className="rounded-lg border border-[#1E2430] px-5 py-3 text-sm font-medium text-[#EDF0F5] transition hover:border-[#2E8BFF] hover:text-[#2E8BFF]"
+                >
+                  ← Aula anterior
+                </Link>
+              ) : (
+                <Link
+                  href={`/aulas/java/${String(moduloNumero).padStart(2, "0")}`}
+                  className="rounded-lg border border-[#1E2430] px-5 py-3 text-sm font-medium text-[#EDF0F5] transition hover:border-[#2E8BFF] hover:text-[#2E8BFF]"
+                >
+                  ← Voltar ao módulo
+                </Link>
+              )}
+
+              {proximaAula ? (
+                <Link
+                  href={`/aulas/java/${String(moduloNumero).padStart(2, "0")}/${String(proximaAula.ordem).padStart(2, "0")}`}
+                  className="rounded-lg bg-[#2E8BFF] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#1976E8]"
+                >
+                  Próxima aula →
+                </Link>
+              ) : (
+                <Link
+                  href={`/aulas/java/${String(moduloNumero).padStart(2, "0")}`}
+                  className="rounded-lg bg-[#2E8BFF] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#1976E8]"
+                >
+                  Finalizar módulo →
+                </Link>
+              )}
+            </div>
           </div>
 
-          <h1 className="mb-4 text-3xl font-bold tracking-tight sm:text-5xl">
-            {moduloData.titulo}
-          </h1>
+          {/* Sidebar */}
+          <aside className="overflow-hidden rounded-2xl border border-[#1E2430] bg-[#10141D] lg:sticky lg:top-6">
 
-          <p className="max-w-[750px] text-base leading-relaxed text-[#8A93A6] sm:text-lg">
-            {moduloData.descricao ||
-              "Explore as aulas deste módulo e avance no seu aprendizado de Java."}
-          </p>
-
-          <div className="mt-7 flex flex-wrap gap-3">
-            <div className="rounded-xl border border-[#1E2430] bg-[#10141D] px-5 py-4">
-              <p className="text-2xl font-bold">{totalAulas}</p>
-              <p className="mt-1 text-xs text-[#8A93A6]">Aulas</p>
-            </div>
-
-            <div className="rounded-xl border border-[#1E2430] bg-[#10141D] px-5 py-4">
-              <p className="text-2xl font-bold">
-                {formatarTempo(totalMinutos)}
+            <div className="border-b border-[#1E2430] p-5">
+              <p className="text-xs font-semibold uppercase tracking-wider text-[#2E8BFF]">
+                Trilha Java
               </p>
-              <p className="mt-1 text-xs text-[#8A93A6]">
-                Tempo estimado
-              </p>
-            </div>
-          </div>
-        </header>
 
-        {/* LISTA DE AULAS */}
-
-        <section>
-          <div className="mb-5 flex items-center justify-between gap-3">
-            <div>
-              <h2 className="text-xl font-bold">
-                Conteúdo do módulo
+              <h2 className="mt-2 font-bold">
+                {aulaData.modulo.titulo}
               </h2>
 
-              <p className="mt-1 text-sm text-[#8A93A6]">
-                Siga as aulas em ordem para aproveitar melhor o conteúdo.
+              <p className="mt-2 text-xs text-[#8A93A6]">
+                {aulas.length} aulas neste módulo
               </p>
             </div>
 
-            <span className="hidden rounded-lg border border-[#1E2430] px-3 py-2 text-xs text-[#8A93A6] sm:block">
-              {totalAulas} aulas disponíveis
-            </span>
-          </div>
+            <div className="max-h-[600px] overflow-y-auto p-3">
+              <div className="space-y-1">
+                {aulas.map((item) => {
+                  const atual = item.id === aulaData.id;
 
-          {moduloData.aulas.length === 0 ? (
-            <div className="rounded-2xl border border-[#1E2430] bg-[#10141D] p-8 text-center">
-              <h3 className="font-semibold">
-                Nenhuma aula cadastrada
-              </h3>
-
-              <p className="mt-2 text-sm text-[#8A93A6]">
-                As aulas deste módulo ainda não estão disponíveis.
-              </p>
-            </div>
-          ) : (
-            <div className="flex flex-col gap-3">
-              {moduloData.aulas.map((aula, index) => (
-                <Link
-                  key={aula.id}
-                  href={`/aulas/java/${String(numero).padStart(2, "0")}/${String(aula.ordem).padStart(2, "0")}`}
-                  className="group flex items-center gap-4 rounded-xl border border-[#1E2430] bg-[#10141D] p-4 transition duration-200 hover:-translate-y-0.5 hover:border-[#2E8BFF]/50 hover:bg-[#131A27] sm:p-5"
-                >
-                  {/* NÚMERO */}
-
-                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-[#2E8BFF]/20 bg-[#2E8BFF]/10 font-mono text-sm font-bold text-[#2E8BFF]">
-                    {String(aula.ordem).padStart(2, "0")}
-                  </div>
-
-                  {/* INFORMAÇÕES */}
-
-                  <div className="min-w-0 flex-1">
-                    <h3 className="truncate font-semibold text-[#EDF0F5] transition group-hover:text-[#2E8BFF]">
-                      {aula.titulo}
-                    </h3>
-
-                    {aula.descricao && (
-                      <p className="mt-1 line-clamp-2 text-sm leading-relaxed text-[#8A93A6]">
-                        {aula.descricao}
-                      </p>
-                    )}
-
-                    {aula.tempoEstimado && (
-                      <span className="mt-2 inline-block text-xs text-[#5C6478]">
-                        {aula.tempoEstimado} minutos
+                  return (
+                    <Link
+                      key={item.id}
+                      href={`/aulas/java/${String(moduloNumero).padStart(2, "0")}/${String(item.ordem).padStart(2, "0")}`}
+                      className={`flex items-center gap-3 rounded-lg p-3 transition ${
+                        atual
+                          ? "border border-[#2E8BFF]/30 bg-[#2E8BFF]/10"
+                          : "border border-transparent hover:bg-[#1E2430]"
+                      }`}
+                    >
+                      <span
+                        className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-xs font-bold ${
+                          atual
+                            ? "bg-[#2E8BFF] text-white"
+                            : "bg-[#1E2430] text-[#8A93A6]"
+                        }`}
+                      >
+                        {String(item.ordem).padStart(2, "0")}
                       </span>
-                    )}
-                  </div>
 
-                  {/* SETA */}
+                      <span
+                        className={`min-w-0 flex-1 text-sm ${
+                          atual
+                            ? "font-semibold text-[#2E8BFF]"
+                            : "text-[#C1C8D5]"
+                        }`}
+                      >
+                        {item.titulo}
+                      </span>
 
-                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-[#1E2430] text-[#8A93A6] transition group-hover:border-[#2E8BFF]/30 group-hover:text-[#2E8BFF]">
-                    →
-                  </div>
-                </Link>
-              ))}
+                      {atual && (
+                        <span className="h-2 w-2 shrink-0 rounded-full bg-[#2E8BFF]" />
+                      )}
+                    </Link>
+                  );
+                })}
+              </div>
             </div>
-          )}
-        </section>
 
-        {/* NAVEGAÇÃO ENTRE MÓDULOS */}
-
-        <footer className="mt-10 flex flex-wrap items-center justify-between gap-4 border-t border-[#1E2430] pt-7">
-          {numero > 1 ? (
-            <Link
-              href={`/aulas/java/${String(numero - 1).padStart(2, "0")}`}
-              className="text-sm text-[#8A93A6] transition hover:text-white"
-            >
-              ← Módulo anterior
-            </Link>
-          ) : (
-            <span />
-          )}
-
-          {numero < 8 ? (
-            <Link
-              href={`/aulas/java/${String(numero + 1).padStart(2, "0")}`}
-              className="rounded-lg bg-gradient-to-r from-[#2E8BFF] to-[#7C5CFF] px-5 py-3 text-sm font-semibold text-white transition hover:opacity-90"
-            >
-              Próximo módulo →
-            </Link>
-          ) : (
-            <Link
-              href="/roadmaps/java"
-              className="rounded-lg bg-gradient-to-r from-[#2E8BFF] to-[#7C5CFF] px-5 py-3 text-sm font-semibold text-white transition hover:opacity-90"
-            >
-              Finalizar roadmap →
-            </Link>
-          )}
-        </footer>
+            <div className="border-t border-[#1E2430] p-4">
+              <Link
+                href={roadmapUrl}
+                className="flex items-center justify-center gap-2 rounded-lg border border-[#1E2430] px-4 py-3 text-sm font-medium text-[#8A93A6] transition hover:border-[#2E8BFF] hover:text-[#2E8BFF]"
+              >
+                ← Voltar ao roadmap
+              </Link>
+            </div>
+          </aside>
+        </div>
       </div>
+
+      {/* Estilização da barra de rolagem */}
+      <style>{`
+        aside div::-webkit-scrollbar {
+          width: 5px;
+        }
+
+        aside div::-webkit-scrollbar-track {
+          background: #10141D;
+        }
+
+        aside div::-webkit-scrollbar-thumb {
+          background: #2E8BFF;
+          border-radius: 10px;
+        }
+      `}</style>
     </main>
   );
 }
