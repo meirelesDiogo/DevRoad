@@ -4,30 +4,35 @@ import { notFound, redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 
-function extrairVideoId(url) {
+function gerarEmbedUrl(url) {
   if (!url) return null;
 
   try {
-    const urlObj = new URL(url);
+    const parsedUrl = new URL(url);
 
-    if (urlObj.hostname.includes("youtu.be")) {
-      return urlObj.pathname.slice(1).split("/")[0] || null;
+    // Identifica playlists
+    const playlistId = parsedUrl.searchParams.get("list");
+
+    if (playlistId) {
+      return `https://www.youtube-nocookie.com/embed/videoseries?list=${playlistId}`;
     }
 
-    if (urlObj.hostname.includes("youtube.com")) {
-      if (urlObj.pathname === "/watch") {
-        return urlObj.searchParams.get("v");
-      }
+    // Identifica vídeos individuais
+    let videoId = null;
 
-      if (
-        urlObj.pathname.startsWith("/embed/") ||
-        urlObj.pathname.startsWith("/shorts/")
-      ) {
-        return urlObj.pathname.split("/")[2] || null;
+    if (parsedUrl.hostname.includes("youtu.be")) {
+      videoId = parsedUrl.pathname.slice(1);
+    } else {
+      videoId = parsedUrl.searchParams.get("v");
+
+      if (!videoId && parsedUrl.pathname.includes("/embed/")) {
+        videoId = parsedUrl.pathname.split("/embed/")[1];
       }
     }
 
-    return null;
+    return videoId
+      ? `https://www.youtube-nocookie.com/embed/${videoId}`
+      : null;
   } catch {
     return null;
   }
@@ -153,7 +158,7 @@ export default async function AulaJavaPage({ params }) {
       ? aulas[indiceAtual + 1]
       : null;
 
-  const videoId = extrairVideoId(aulaData.youtubeUrl);
+const videoEmbedUrl = gerarEmbedUrl(aulaData.youtubeUrl);
 
   const documentacaoUrl =
     aulaData.documentacaoUrl || "https://www.w3schools.com/java/";
@@ -226,33 +231,19 @@ export default async function AulaJavaPage({ params }) {
             {/* Vídeo */}
             <section className="mb-6 overflow-hidden rounded-2xl border border-[#1E2430] bg-[#10141D]">
 
-              {videoId ? (
-                <div className="relative aspect-video w-full bg-black">
-                  <iframe
-                    src={`https://www.youtube-nocookie.com/embed/${videoId}`}
-                    title={`Aula: ${aulaData.titulo}`}
-                    className="absolute inset-0 h-full w-full"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                    allowFullScreen
-                  />
-                </div>
-              ) : (
-                <div className="flex aspect-video flex-col items-center justify-center px-6 text-center">
-                  <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl border border-[#2E8BFF]/20 bg-[#2E8BFF]/10 text-2xl text-[#2E8BFF]">
-                    ▶
-                  </div>
-
-                  <h2 className="text-lg font-semibold">
-                    Vídeo ainda não disponível
-                  </h2>
-
-                  <p className="mt-2 max-w-md text-sm leading-relaxed text-[#8A93A6]">
-                    O conteúdo em vídeo desta aula ainda não foi cadastrado.
-                    Você pode continuar estudando pela descrição e pela
-                    documentação complementar.
-                  </p>
-                </div>
-              )}
+              {videoEmbedUrl ? (
+  <iframe
+    src={videoEmbedUrl}
+    title={`Vídeo: ${aulaData.titulo}`}
+    className="h-full w-full"
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+    allowFullScreen
+  />
+) : (
+  <div className="flex h-full items-center justify-center text-gray-400">
+    Vídeo ainda não disponível para esta aula.
+  </div>
+)}
             </section>
 
             {/* Canal do vídeo */}
