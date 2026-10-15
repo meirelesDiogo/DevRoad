@@ -229,22 +229,21 @@ const videoEmbedUrl = gerarEmbedUrl(aulaData.youtubeUrl);
             </section>
 
             {/* Vídeo */}
-            <section className="mb-6 overflow-hidden rounded-2xl border border-[#1E2430] bg-[#10141D]">
-
-              {videoEmbedUrl ? (
-  <iframe
-    src={videoEmbedUrl}
-    title={`Vídeo: ${aulaData.titulo}`}
-    className="h-full w-full"
-    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-    allowFullScreen
-  />
-) : (
-  <div className="flex h-full items-center justify-center text-gray-400">
-    Vídeo ainda não disponível para esta aula.
-  </div>
-)}
-            </section>
+            <div className="w-full overflow-hidden rounded-xl aspect-video min-h-[300px]">
+  {videoEmbedUrl ? (
+    <iframe
+      src={videoEmbedUrl}
+      title={`Vídeo: ${aulaData.titulo}`}
+      className="w-full h-full min-h-[300px]"
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+      allowFullScreen
+    />
+  ) : (
+    <div className="flex h-full min-h-[300px] items-center justify-center text-gray-400">
+      Vídeo ainda não disponível para esta aula.
+    </div>
+  )}
+</div>
 
             {/* Canal do vídeo */}
             {aulaData.youtubeCanal && (
