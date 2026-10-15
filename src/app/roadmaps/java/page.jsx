@@ -213,13 +213,13 @@ export default async function JavaRoadmap() {
         </Link>
 
         <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-2xl border border-[var(--border)] bg-[var(--surface)]">
-          <img
-            src="/icons/back/java.svg"
-            alt="Java"
-            width={38}
-            height={38}
-            className="h-10 w-10"
-          />
+         <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-2xl border border-[var(--border)] bg-[var(--surface)]">
+  <img
+    src="/icons/back/java.svg"
+    alt="Java"
+    className="block h-10 w-10 object-contain"
+  />
+</div>
         </div>
 
         <p
