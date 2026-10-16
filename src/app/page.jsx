@@ -8,8 +8,8 @@ export const metadata = {
 };
 
 const LANGUAGES = [
-  { name: "HTML", icon: "/icons/front/html.svg", href: "/roadmaps/html" },
-  { name: "CSS", icon: "/icons/front/css.svg", href: "/roadmaps/css" },
+  { name: "HTML", icon: "/icons/front/html.svg", href: "/roadmaps/html-css" },
+  { name: "CSS", icon: "/icons/front/css.svg", href: "/roadmaps/html-css" },
   { name: "JavaScript", icon: "/icons/front/javascript.svg", href: "/roadmaps/javascript" },
   { name: "Python", icon: "/icons/back/python.svg", href: "/roadmaps/python" },
   { name: "Java", icon: "/icons/back/java.svg", href: "/roadmaps/java" },
