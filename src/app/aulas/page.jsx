@@ -206,23 +206,7 @@ export default async function AulasPage() {
           )}{" "}
         </main>{" "}
         {/* ========================= FOOTER ========================= */}{" "}
-        <footer className="footer">
-          {" "}
-          <div className="footer-content">
-            {" "}
-            <p>
-              {" "}
-              © {new Date().getFullYear()} DevRoad. Aprenda · Pratique ·
-              Evolua.{" "}
-            </p>{" "}
-            <div className="footer-links">
-              {" "}
-              <Link href="/roadmaps">Roadmaps</Link>{" "}
-              <Link href="/projetos">Projetos</Link>{" "}
-              <Link href="/sobre">Sobre</Link>{" "}
-            </div>{" "}
-          </div>{" "}
-        </footer>{" "}
+        
       </div>{" "}
     </>
   );
