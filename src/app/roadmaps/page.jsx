@@ -57,7 +57,7 @@ const ROADMAPS = [
   {
     slug: "nextjs",
     name: "Next.js",
-    icon: "/icons/front/nextjs.svg",
+    icon: "/icons/front/next.js.svg",
     level: "Intermediário ao avançado",
     description:
       "Construa aplicações web modernas com React, renderização no servidor e recursos do Next.js.",
