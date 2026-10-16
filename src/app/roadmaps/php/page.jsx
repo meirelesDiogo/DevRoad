@@ -10,7 +10,7 @@ export const metadata = {
 };
 
 export default async function PHPPage() {
-  const tecnologia = await prisma.tecnologia.findFirst({
+  const tecnologia = await prisma.tecnologias.findFirst({
     where: {
       nome: "PHP",
     },
