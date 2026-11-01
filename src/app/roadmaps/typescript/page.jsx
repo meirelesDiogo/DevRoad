@@ -3,14 +3,14 @@ import { auth } from "@/auth";
 import RoadmapLayout from "@/components/roadmaps/roadmap-layout";
 
 export const metadata = {
-  title: "Roadmap TypeScript | DevRoad",
+  title: "TypeScript - DevRoad",
   description:
-    "Aprenda TypeScript do básico ao avançado com uma trilha prática e organizada.",
+    "Roadmap completo de TypeScript, dos fundamentos até Generics, orientação a objetos e desenvolvimento com Node.js.",
 };
 
 const ROADMAP = [
   {
-    etapa: 1,
+    etapa: "01",
     titulo: "Introdução ao TypeScript",
     descricao:
       "Conheça o TypeScript, entenda suas vantagens e prepare seu ambiente de desenvolvimento.",
@@ -26,7 +26,7 @@ const ROADMAP = [
     ],
   },
   {
-    etapa: 2,
+    etapa: "02",
     titulo: "Tipos e variáveis",
     descricao:
       "Aprenda a trabalhar com os principais tipos de dados e a declarar variáveis com segurança.",
@@ -42,7 +42,7 @@ const ROADMAP = [
     ],
   },
   {
-    etapa: 3,
+    etapa: "03",
     titulo: "Funções e tipagem avançada",
     descricao:
       "Domine a tipagem de funções, parâmetros, retornos e recursos que tornam o código mais seguro.",
@@ -58,7 +58,7 @@ const ROADMAP = [
     ],
   },
   {
-    etapa: 4,
+    etapa: "04",
     titulo: "Objetos, interfaces e tipos",
     descricao:
       "Organize estruturas de dados utilizando objetos, interfaces e combinações de tipos.",
@@ -74,7 +74,7 @@ const ROADMAP = [
     ],
   },
   {
-    etapa: 5,
+    etapa: "05",
     titulo: "Orientação a objetos",
     descricao:
       "Utilize os recursos de orientação a objetos do TypeScript para estruturar aplicações.",
@@ -90,7 +90,7 @@ const ROADMAP = [
     ],
   },
   {
-    etapa: 6,
+    etapa: "06",
     titulo: "Generics e recursos avançados",
     descricao:
       "Explore recursos avançados da linguagem para criar códigos reutilizáveis e flexíveis.",
@@ -106,7 +106,7 @@ const ROADMAP = [
     ],
   },
   {
-    etapa: 7,
+    etapa: "07",
     titulo: "TypeScript no desenvolvimento",
     descricao:
       "Aprenda a utilizar TypeScript em projetos reais, trabalhando com módulos, APIs e ferramentas.",
@@ -122,7 +122,7 @@ const ROADMAP = [
     ],
   },
   {
-    etapa: 8,
+    etapa: "08",
     titulo: "Projeto final",
     descricao:
       "Aplique os conhecimentos adquiridos desenvolvendo uma aplicação completa com TypeScript.",
@@ -139,22 +139,26 @@ const ROADMAP = [
   },
 ];
 
-export default async function TypeScriptRoadmapPage() {
+export default async function TypeScriptRoadmap() {
   const session = await auth();
 
   return (
     <RoadmapLayout
       titulo="TypeScript"
-      descricao="Aprenda TypeScript do zero e desenvolva aplicações mais seguras, organizadas e escaláveis."
-      categoria="Front-end"
+      descricao="Aprenda TypeScript do zero. Domine tipagem estática, interfaces, Generics e desenvolva aplicações mais seguras e organizadas."
+      categoria="Roadmap · TypeScript"
       icone="/icons/front/typescript.svg"
-      iconeAlt="Logo do TypeScript"
-      logoTexto="TypeScript"
+      iconeAlt="TypeScript"
       roadmap={ROADMAP}
       isAuthenticated={Boolean(session?.user)}
       moduleBase="/aulas/typescript"
       lessonSuffix="/01"
-      projeto="/projetos/typescript"
+      projeto={{
+        titulo: "Agora coloque tudo em prática.",
+        descricao:
+          "Depois de concluir as etapas, você estará preparado para desenvolver aplicações com TypeScript, trabalhar com APIs e utilizar tipagem estática em projetos com Node.js.",
+        href: "/projetos/typescript",
+      }}
     />
   );
 }
