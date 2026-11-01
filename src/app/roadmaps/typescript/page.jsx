@@ -1,6 +1,6 @@
 
 import { auth } from "@/auth";
-import RoadmapLayout from "@/components/RoadmapLayout";
+import RoadmapLayout from "@/components/roadmaps/roadmap-layout";
 
 export const metadata = {
   title: "Roadmap TypeScript | DevRoad",
