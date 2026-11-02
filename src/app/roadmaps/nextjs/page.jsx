@@ -139,7 +139,7 @@ export default async function NextjsRoadmapPage() {
       titulo="Next.js"
       descricao="Aprenda a desenvolver aplicações web modernas e completas com Next.js, desde a criação de páginas até APIs, autenticação e banco de dados."
       categoria="Frontend e Backend"
-      icone="/icons/front/nextjs.svg"
+      icone="/icons/front/next.js.svg"
       iconeAlt="Next.js"
       logoTexto="Next.js"
       roadmap={roadmap}
