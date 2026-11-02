@@ -1,526 +1,241 @@
+
 import Link from "next/link";
 import { auth } from "@/auth";
-import { prisma } from "@/lib/prisma";
+
+/**
+ * Roadmaps — DevRoad
+ * Local: src/app/aulas/page.jsx
+ */
+
 export const metadata = {
   title: "Aulas - DevRoad",
   description:
-    "Aprenda programação com aulas organizadas em módulos no DevRoad.",
+    "Escolha uma linguagem e siga o roadmap guiado do zero ao avançado.",
 };
-export default async function AulasPage() {
+
+const ROADMAPS = [
+  {
+    slug: "html-css",
+    name: "HTML & CSS",
+    icon: "/icons/front/html.svg",
+    level: "Iniciante",
+    description:
+      "A base de toda a web. Estruture páginas e estilize do zero.",
+  },
+  {
+    slug: "javascript",
+    name: "JavaScript",
+    icon: "/icons/front/javascript.svg",
+    level: "Iniciante ao avançado",
+    description:
+      "Dê vida às suas páginas e aprenda a linguagem mais usada da web.",
+  },
+  {
+    slug: "typescript",
+    name: "TypeScript",
+    icon: "/icons/front/typescript.svg",
+    level: "Intermediário",
+    description:
+      "Aprenda tipagem estática e desenvolva aplicações JavaScript mais seguras e organizadas.",
+  },
+  {
+    slug: "angular",
+    name: "Angular",
+    icon: "/icons/front/angular.svg",
+    level: "Intermediário ao avançado",
+    description:
+      "Desenvolva aplicações web completas com componentes, serviços e ferramentas do Angular.",
+  },
+  {
+    slug: "bootstrap",
+    name: "Bootstrap",
+    icon: "/icons/front/bootstrap.svg",
+    level: "Iniciante",
+    description:
+      "Crie interfaces responsivas rapidamente utilizando componentes e classes prontas.",
+  },
+  {
+    slug: "nextjs",
+    name: "Next.js",
+    icon: "/icons/front/next.js.svg",
+    level: "Intermediário ao avançado",
+    description:
+      "Construa aplicações web modernas com React, renderização no servidor e recursos do Next.js.",
+  },
+  {
+    slug: "python",
+    name: "Python",
+    icon: "/icons/back/python.svg",
+    level: "Iniciante ao avançado",
+    description:
+      "Sintaxe simples, poder enorme. Ótima primeira linguagem de back-end.",
+  },
+  {
+    slug: "java",
+    name: "Java",
+    icon: "/icons/back/java.svg",
+    level: "Intermediário ao avançado",
+    description:
+      "Programação orientada a objetos e sistemas robustos.",
+  },
+  {
+    slug: "php",
+    name: "PHP",
+    icon: "/icons/back/php.svg",
+    level: "Iniciante ao avançado",
+    description:
+      "Ainda move boa parte da web. Simples de aprender, fácil de aplicar.",
+  },
+];
+
+export default async function Roadmaps() {
   const session = await auth();
-  const tecnologias = await prisma.tecnologias.findMany({
-    include: {
-      modulos: {
-        include: { aulas: { orderBy: { ordem: "asc" } } },
-        orderBy: { ordem: "asc" },
-      },
-    },
-    orderBy: { id: "asc" },
-  });
+  const isAuthenticated = Boolean(session?.user);
+
   return (
-    <>
-      {" "}
-      
-<style>{`
-  /* =========================
-     PAGE
-  ========================= */
+    <main className="relative overflow-hidden bg-[var(--bg)]">
+      {/* Efeito de fundo */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute left-1/2 top-0 h-[500px] w-[900px] -translate-x-1/2 -translate-y-1/3 rounded-full opacity-10 blur-[120px]"
+        style={{
+          background:
+            "linear-gradient(90deg, var(--blue), var(--purple))",
+        }}
+      />
 
-  .page {
-    min-height: 100vh;
-    background:
-      radial-gradient(
-        circle at 50% -10%,
-        rgba(46, 139, 255, 0.10),
-        transparent 35%
-      ),
-      #0A0D14;
-    color: #EDF0F5;
-    font-family: 'Inter', sans-serif;
-  }
+      {/* Cabeçalho */}
+      <section className="relative mx-auto max-w-[700px] px-6 pb-14 pt-24 text-center lg:pt-32">
+        <p
+          style={{ fontFamily: "'JetBrains Mono', monospace" }}
+          className="mb-4 text-xs font-semibold uppercase tracking-[0.14em] text-[var(--blue)]"
+        >
+          Aulas
+        </p>
 
-  .page,
-  .page * {
-    box-sizing: border-box;
-  }
+        <h1
+          style={{ fontFamily: "'Space Grotesk', sans-serif" }}
+          className="mb-5 text-4xl font-bold leading-tight tracking-tight text-[var(--text)] sm:text-5xl"
+        >
+          Escolha seu{" "}
+          <span className="bg-gradient-to-r from-[var(--blue)] to-[var(--purple)] bg-clip-text text-transparent">
+            caminho
+          </span>
+        </h1>
 
-  /* =========================
-     MAIN
-  ========================= */
+        <p className="mx-auto max-w-md text-lg leading-relaxed text-[var(--muted)]">
+          Cada roadmap leva você do zero ao avançado, com aulas, exercícios e
+          projetos práticos.
+        </p>
 
-  .main {
-    max-width: 1180px;
-    margin: 0 auto;
-    padding: 72px 24px 100px;
-  }
+        {!isAuthenticated && (
+          <p
+            style={{ color: "var(--muted)" }}
+            className="mt-5 text-sm"
+          >
+            <Link
+              href="/login"
+              style={{ color: "var(--blue)" }}
+              className="font-semibold hover:underline"
+            >
+              Faça login
+            </Link>{" "}
+            pra acompanhar seu progresso em cada roadmap.
+          </p>
+        )}
 
-  .hero {
-    max-width: 760px;
-    margin-bottom: 58px;
-  }
+        <div className="road-rule--brand road-rule mx-auto mt-8 w-40" />
+      </section>
 
-  .eyebrow {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 18px;
-    color: #2E8BFF;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 12px;
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-  }
+      {/* Lista de roadmaps */}
+      <section className="relative mx-auto max-w-[900px] px-6 pb-24">
+        <div className="flex flex-col gap-4">
+          {ROADMAPS.map((roadmap) => (
+            <div
+              key={roadmap.slug}
+              className="flex flex-col items-start gap-5 rounded-2xl border p-6 transition-colors hover:border-[#2E8BFF] sm:flex-row sm:items-center"
+              style={{
+                backgroundColor: "var(--surface)",
+                borderColor: "var(--border)",
+              }}
+            >
+              {/* Ícone */}
+              <div
+                className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl"
+                style={{ backgroundColor: "var(--surface-2)" }}
+              >
+                <img
+                  src={roadmap.icon}
+                  alt={`Ícone ${roadmap.name}`}
+                  width={28}
+                  height={28}
+                  className="h-7 w-7 object-contain"
+                />
+              </div>
 
-  .eyebrow::before {
-    content: "";
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    background: #2E8BFF;
-    box-shadow: 0 0 12px rgba(46, 139, 255, 0.7);
-  }
+              {/* Informações */}
+              <div className="min-w-0 flex-1">
+                <div className="mb-1 flex flex-wrap items-center gap-2">
+                  <h2
+                    style={{
+                      fontFamily: "'Space Grotesk', sans-serif",
+                      color: "var(--text)",
+                    }}
+                    className="text-lg font-bold"
+                  >
+                    {roadmap.name}
+                  </h2>
 
-  .hero h1 {
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: clamp(38px, 5vw, 62px);
-    line-height: 1.05;
-    letter-spacing: -2px;
-    margin-bottom: 20px;
-  }
+                  <span
+                    style={{
+                      borderColor: "var(--border)",
+                      color: "var(--muted)",
+                    }}
+                    className="rounded-full border px-2.5 py-0.5 text-[11px] font-medium"
+                  >
+                    {roadmap.level}
+                  </span>
+                </div>
 
-  .hero h1 span {
-    color: #2E8BFF;
-  }
+                <p
+                  style={{ color: "var(--muted)" }}
+                  className="text-sm leading-relaxed"
+                >
+                  {roadmap.description}
+                </p>
+              </div>
 
-  .hero p {
-    max-width: 680px;
-    color: #8A93A6;
-    font-size: 17px;
-    line-height: 1.75;
-  }
+              {/* Botão */}
+              <Link
+                href={
+                  isAuthenticated
+                    ? `/roadmaps/${roadmap.slug}`
+                    : "/login"
+                }
+                style={{
+                  borderColor: "var(--border)",
+                  color: "var(--text)",
+                }}
+                className="flex w-full shrink-0 items-center justify-center gap-1.5 rounded-lg border px-5 py-2.5 text-sm font-semibold transition-colors hover:bg-[var(--surface-2)] sm:w-auto"
+              >
+                {isAuthenticated ? "Começar" : "Entrar para começar"}
 
-  /* =========================
-     TECHNOLOGY
-  ========================= */
-
-  .technology {
-    margin-top: 70px;
-  }
-
-  .technology-header {
-    display: flex;
-    align-items: flex-end;
-    justify-content: space-between;
-    gap: 20px;
-    margin-bottom: 24px;
-  }
-
-  .technology-title {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-
-  .technology-icon {
-    width: 42px;
-    height: 42px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: 1px solid #1E2430;
-    border-radius: 10px;
-    background: #10141D;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 15px;
-    font-weight: 600;
-  }
-
-  .technology-title h2 {
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: 27px;
-    letter-spacing: -0.7px;
-  }
-
-  .technology-title p {
-    margin-top: 3px;
-    color: #5C6478;
-    font-size: 13px;
-  }
-
-  .technology-count {
-    color: #5C6478;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 12px;
-  }
-
-  /* =========================
-     MODULES
-  ========================= */
-
-  .modules {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 16px;
-  }
-
-  .module {
-    position: relative;
-    overflow: hidden;
-    border: 1px solid #1E2430;
-    border-radius: 14px;
-    background: #10141D;
-    transition:
-      border-color 0.2s,
-      transform 0.2s,
-      background 0.2s;
-  }
-
-  .module:hover {
-    border-color: #2E8BFF;
-    transform: translateY(-2px);
-    background: #111722;
-  }
-
-  .module-link {
-    display: block;
-    padding: 24px;
-    text-decoration: none;
-    color: inherit;
-  }
-
-  .module-top {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 16px;
-    margin-bottom: 16px;
-  }
-
-  .module-number {
-    color: #2E8BFF;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 12px;
-    font-weight: 500;
-  }
-
-  .module-arrow {
-    color: #5C6478;
-    font-size: 20px;
-    transition: 0.2s;
-  }
-
-  .module:hover .module-arrow {
-    color: #2E8BFF;
-    transform: translateX(4px);
-  }
-
-  .module h3 {
-    color: #EDF0F5;
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: 20px;
-    margin-bottom: 9px;
-  }
-
-  .module-description {
-    min-height: 42px;
-    color: #8A93A6;
-    font-size: 13px;
-    line-height: 1.6;
-  }
-
-  .module-footer {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 15px;
-    margin-top: 22px;
-    padding-top: 15px;
-    border-top: 1px solid #1E2430;
-  }
-
-  .lesson-count {
-    color: #5C6478;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 11px;
-  }
-
-  .progress-bar {
-    flex: 1;
-    max-width: 130px;
-    height: 4px;
-    overflow: hidden;
-    border-radius: 10px;
-    background: #1E2430;
-  }
-
-  .progress-fill {
-    width: 0%;
-    height: 100%;
-    border-radius: inherit;
-    background: #2E8BFF;
-  }
-
-  /* =========================
-     EMPTY STATE
-  ========================= */
-
-  .empty {
-    border: 1px dashed #1E2430;
-    border-radius: 14px;
-    padding: 50px 30px;
-    text-align: center;
-    background: rgba(16, 20, 29, 0.5);
-  }
-
-  .empty h2 {
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: 22px;
-    margin-bottom: 10px;
-  }
-
-  .empty p {
-    color: #8A93A6;
-    font-size: 14px;
-  }
-
-  /* =========================
-     RESPONSIVE
-  ========================= */
-
-  @media (max-width: 800px) {
-    .main {
-      padding: 55px 18px 80px;
-    }
-
-    .hero {
-      margin-bottom: 45px;
-    }
-
-    .hero h1 {
-      font-size: 40px;
-      letter-spacing: -1.5px;
-    }
-
-    .hero p {
-      font-size: 15px;
-    }
-
-    .modules {
-      grid-template-columns: 1fr;
-    }
-
-    .technology-header {
-      align-items: flex-start;
-    }
-
-    .technology-count {
-      display: none;
-    }
-  }
-
-  @media (max-width: 480px) {
-    .hero h1 {
-      font-size: 34px;
-    }
-
-    .technology-title h2 {
-      font-size: 23px;
-    }
-
-    .module-link {
-      padding: 20px;
-    }
-  }
-`}</style>
-
-      <div className="page">
-        
-        {/* ========================= MAIN ========================= */}{" "}
-        <main className="main">
-          {" "}
-          <section className="hero">
-            {" "}
-            <div className="eyebrow">Área de aprendizado</div>{" "}
-            <h1>
-              {" "}
-              Escolha o que você quer <span>aprender.</span>{" "}
-            </h1>{" "}
-            <p>
-              {" "}
-              Encontre aulas organizadas por tecnologia, módulo e nível. Avance
-              no seu ritmo e transforme conhecimento em prática.{" "}
-            </p>{" "}
-          </section>{" "}
-          {tecnologias.length === 0 ? (
-            <section className="empty">
-              {" "}
-              <h2>Nenhuma aula disponível</h2>{" "}
-              <p>
-                {" "}
-                Ainda não existem tecnologias cadastradas no DevRoad.{" "}
-              </p>{" "}
-            </section>
-          ) : (
-            <div>
-              {" "}
-              {tecnologias.map((tecnologia) => {
-                const totalAulas = tecnologia.modulos.reduce(
-                  (total, modulo) => total + modulo.aulas.length,
-                  0,
-                );
-                const primeiraAula = tecnologia.modulos
-                  .flatMap((modulo) => modulo.aulas)
-                  .sort((a, b) => {
-                    if (a.moduloId !== b.moduloId) {
-                      return a.moduloId - b.moduloId;
-                    }
-                    return a.ordem - b.ordem;
-                  })[0];
-                return (
-                  <section className="technology" key={tecnologia.id}>
-                    {" "}
-                    <div className="technology-header">
-                      {" "}
-                      <div className="technology-title">
-                        {" "}
-                        <div
-                          className="technology-icon"
-                          style={{ color: tecnologia.cor || "#2E8BFF" }}
-                        >
-                          {" "}
-                          {tecnologia.nome === "JavaScript"
-                            ? "JS"
-                            : tecnologia.nome === "Python"
-                              ? "PY"
-                              : tecnologia.nome === "HTML & CSS"
-                                ? "</>"
-                                : "</>"}{" "}
-                        </div>{" "}
-                        <div>
-                          {" "}
-                          <h2>{tecnologia.nome}</h2>{" "}
-                          <p>
-                            {" "}
-                            {tecnologia.descricao ||
-                              "Aprenda através de aulas práticas e organizadas."}{" "}
-                          </p>{" "}
-                        </div>{" "}
-                      </div>{" "}
-                      <span className="technology-count">
-                        {" "}
-                        {totalAulas} {totalAulas === 1 ? "aula" : "aulas"}{" "}
-                      </span>{" "}
-                    </div>{" "}
-                    {tecnologia.modulos.length === 0 ? (
-                      <div className="empty">
-                        {" "}
-                        <h2>Em construção</h2>{" "}
-                        <p>
-                          {" "}
-                          Os módulos desta tecnologia ainda estão sendo
-                          preparados.{" "}
-                        </p>{" "}
-                      </div>
-                    ) : (
-                      <div className="modules">
-                        {" "}
-                        {tecnologia.modulos.map((modulo) => {
-                          const primeiraAulaModulo = modulo.aulas[0];
-                          return (
-                            <article className="module" key={modulo.id}>
-                              {" "}
-                              {primeiraAulaModulo ? (
-                                <Link
-                                  href={`/aulas/${tecnologia.nome
-                                    .toLowerCase()
-                                    .replace(/\s*&\s*/g, "-")
-                                    .replace(
-                                      /\s+/g,
-                                      "-",
-                                    )}/${String(modulo.ordem).padStart(2, "0")}/${String(primeiraAulaModulo.ordem).padStart(2, "0")}`}
-                                  className="module-link"
-                                >
-                                  {" "}
-                                  <div className="module-top">
-                                    {" "}
-                                    <span className="module-number">
-                                      {" "}
-                                      MÓDULO{" "}
-                                      {String(modulo.ordem).padStart(
-                                        2,
-                                        "0",
-                                      )}{" "}
-                                    </span>{" "}
-                                    <span className="module-arrow">
-                                      {" "}
-                                      →{" "}
-                                    </span>{" "}
-                                  </div>{" "}
-                                  <h3>{modulo.titulo}</h3>{" "}
-                                  <p className="module-description">
-                                    {" "}
-                                    {modulo.descricao ||
-                                      "Conteúdo prático para desenvolver suas habilidades."}{" "}
-                                  </p>{" "}
-                                  <div className="module-footer">
-                                    {" "}
-                                    <span className="lesson-count">
-                                      {" "}
-                                      {modulo.aulas.length}{" "}
-                                      {modulo.aulas.length === 1
-                                        ? "aula"
-                                        : "aulas"}{" "}
-                                    </span>{" "}
-                                    <div className="progress-bar">
-                                      {" "}
-                                      <div className="progress-fill" />{" "}
-                                    </div>{" "}
-                                  </div>{" "}
-                                </Link>
-                              ) : (
-                                <div className="module-link">
-                                  {" "}
-                                  <div className="module-top">
-                                    {" "}
-                                    <span className="module-number">
-                                      {" "}
-                                      MÓDULO{" "}
-                                      {String(modulo.ordem).padStart(
-                                        2,
-                                        "0",
-                                      )}{" "}
-                                    </span>{" "}
-                                  </div>{" "}
-                                  <h3>{modulo.titulo}</h3>{" "}
-                                  <p className="module-description">
-                                    {" "}
-                                    {modulo.descricao ||
-                                      "Conteúdo em preparação."}{" "}
-                                  </p>{" "}
-                                  <div className="module-footer">
-                                    {" "}
-                                    <span className="lesson-count">
-                                      {" "}
-                                      Nenhuma aula disponível{" "}
-                                    </span>{" "}
-                                  </div>{" "}
-                                </div>
-                              )}{" "}
-                            </article>
-                          );
-                        })}{" "}
-                      </div>
-                    )}{" "}
-                  </section>
-                );
-              })}{" "}
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth={2.5}
+                  strokeLinecap="round"
+                >
+                  <path d="M5 12h14M13 6l6 6-6 6" />
+                </svg>
+              </Link>
             </div>
-          )}{" "}
-        </main>{" "}
-        {/* ========================= FOOTER ========================= */}{" "}
-        
-      </div>{" "}
-    </>
+          ))}
+        </div>
+      </section>
+    </main>
   );
 }
