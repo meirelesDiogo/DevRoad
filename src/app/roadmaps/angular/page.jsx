@@ -1,5 +1,6 @@
 
 import RoadmapLayout from "@/components/roadmaps/roadmap-layout";
+import { auth } from "@/auth";
 
 export const metadata = {
   title: "Angular - DevRoad",
@@ -137,8 +138,9 @@ const roadmap = [
     ],
   },
 ];
+export default async function AngularRoadmapPage() {
+  const session = await auth();
 
-export default function AngularRoadmapPage() {
   return (
     <RoadmapLayout
       titulo="Angular"
@@ -148,7 +150,7 @@ export default function AngularRoadmapPage() {
       iconeAlt="Angular"
       logoTexto="Angular"
       roadmap={roadmap}
-      isAuthenticated={false}
+      isAuthenticated={!!session?.user}
       moduleBase="/aulas/angular"
       lessonSuffix="/01"
       projeto={{
